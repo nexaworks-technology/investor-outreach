@@ -22,8 +22,6 @@ export default async function DashboardPage() {
       { label: 'Emails Sent', value: metrics.totalSent, icon: Send, color: 'text-zinc-500', bg: 'bg-zinc-500/10' },
       { label: 'Open Rate', value: `${metrics.openRate}%`, icon: Eye, color: 'text-sky-500', bg: 'bg-sky-500/10' },
       { label: 'Reply Rate', value: `${metrics.replyRate}%`, icon: MessageSquare, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
-      { label: 'Meetings Booked', value: metrics.meetingsBooked, icon: Calendar, color: 'text-green-500', bg: 'bg-green-500/10' },
-      { label: 'Positive Reply Rate', value: `${metrics.positiveReplyRate}%`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
       { label: 'Active Campaigns', value: metrics.activeCampaigns, icon: Target, color: 'text-amber-500', bg: 'bg-amber-500/10' },
       { label: 'Pending Approvals', value: metrics.pendingApprovals, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-500/10' },
     ];

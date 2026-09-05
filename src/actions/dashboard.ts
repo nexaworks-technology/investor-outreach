@@ -23,14 +23,6 @@ export async function getDashboardData() {
     where: { workspaceId, direction: 'INBOUND' },
   });
   
-  const positiveReplies = await db.emailMessage.count({
-    where: {
-      workspaceId,
-      direction: 'INBOUND',
-      replyClassification: { in: ['INTERESTED', 'WANTS_DECK', 'WANTS_MEETING'] },
-    },
-  });
-  
   const bounces = await db.emailMessage.count({
     where: { workspaceId, status: 'BOUNCED' },
   });
@@ -112,15 +104,12 @@ export async function getDashboardData() {
       totalSent,
       totalOpens,
       totalReplies,
-      positiveReplies,
       openRate: totalSent > 0 ? Math.round((totalOpens / totalSent) * 100) : 0,
       replyRate: totalSent > 0 ? Math.round((totalReplies / totalSent) * 100) : 0,
-      positiveReplyRate: totalSent > 0 ? Math.round((positiveReplies / totalSent) * 100) : 0,
       bounceRate: totalSent > 0 ? Math.round((bounces / totalSent) * 100) : 0,
       activeCampaigns,
       pendingApprovals,
       tasksNeedingAction,
-      meetingsBooked: pipelineCounts.find(p => p.pipelineStatus === 'MEETING_BOOKED')?._count ?? 0,
       passes: pipelineCounts.find(p => p.pipelineStatus === 'PASSED')?._count ?? 0,
     },
     pipelineCounts: pipelineCounts.map(p => ({

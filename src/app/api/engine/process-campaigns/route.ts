@@ -136,14 +136,18 @@ export async function POST(req: Request) {
           }
         });
 
-        // Update campaign investor state
+        // Determine next send date based on the NEXT step's delay
+        const nextStep = campaign.sequenceSteps.find(s => s.order === currentStepOrder + 1);
+        
         await db.campaignInvestor.update({
           where: { id: campInv.id },
           data: {
             status: "IN_PROGRESS",
             currentStepOrder: currentStepOrder + 1,
-            // Calculate next send date based on next step delay
-            nextSendAt: new Date(Date.now() + (step.delayDays * 24 * 60 * 60 * 1000))
+            // If there's a next step, add its delay. If no next step, set to null (finished).
+            nextSendAt: nextStep 
+              ? new Date(Date.now() + (nextStep.delayDays * 24 * 60 * 60 * 1000))
+              : null
           }
         });
         
