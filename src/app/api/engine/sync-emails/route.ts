@@ -4,6 +4,8 @@ import { gmailProvider } from '@/lib/email/gmail';
 import { smtpProvider } from '@/lib/email/smtp';
 import { ConnectionCredentials } from '@/lib/email/provider';
 import { decrypt } from '@/lib/encryption';
+import { classifyEmailReply } from '@/lib/ai';
+import { ReplyClassification, PipelineStatus } from '@prisma/client';
 
 export const maxDuration = 300; // 5 minutes
 
@@ -22,7 +24,9 @@ export async function POST(req: Request) {
         isActive: true,
       },
       include: {
-        workspace: true,
+        workspace: {
+          include: { settings: true }
+        },
       }
     });
 
@@ -90,6 +94,13 @@ export async function POST(req: Request) {
             });
 
             if (!existingMsg) {
+              const apiKeys = (mailbox.workspace as any).settings?.llmApiKeys as string[] || [];
+              const rawBody = msg.bodyHtml || msg.body || '';
+              const { classification, suggestedResponse } = await classifyEmailReply(apiKeys, rawBody);
+              
+              const isValidClassification = Object.values(ReplyClassification).includes(classification as any);
+              const finalClass = isValidClassification ? classification : null;
+
               // Save the inbound message
               await db.emailMessage.create({
                 data: {
@@ -102,25 +113,49 @@ export async function POST(req: Request) {
                   fromEmail: msg.from,
                   toEmail: msg.to,
                   subject: msg.subject,
-                  body: msg.bodyHtml || msg.body || '',
+                  body: rawBody,
                   messageIdHeader: msg.messageIdHeader,
                   inReplyToHeader: msg.inReplyTo,
                   gmailMessageId: msg.messageId,
                   gmailThreadId: msg.threadId,
-                  sentAt: msg.date
+                  sentAt: msg.date,
+                  replyClassification: finalClass as any,
+                  suggestedResponse: suggestedResponse || null
                 }
               });
-            }
 
-            // Update the campaign investor status to REPLIED to halt follow-ups if this was part of a campaign
-            if (originalMessage.campaignInvestor && originalMessage.campaignInvestor.status !== 'REPLIED') {
-              await db.campaignInvestor.update({
-                where: { id: originalMessage.campaignInvestorId! },
-                data: {
-                  status: 'REPLIED'
-                }
-              });
-              console.log(`[Engine] Marked investor ${originalMessage.investorId} as REPLIED. Follow-ups halted.`);
+              // Smart Pipeline Routing based on AI classification
+              let newPipelineStatus: PipelineStatus | null = null;
+              if (finalClass === 'INTERESTED' || finalClass === 'WANTS_DECK' || finalClass === 'FORWARDED_TO_COLLEAGUE') newPipelineStatus = 'INTERESTED';
+              if (finalClass === 'WANTS_MEETING') newPipelineStatus = 'MEETING_BOOKED';
+              if (finalClass === 'PASS') newPipelineStatus = 'PASSED';
+              if (finalClass === 'NOT_NOW') newPipelineStatus = 'NO_RESPONSE';
+
+              if (newPipelineStatus && originalMessage.investorId) {
+                await db.investor.update({
+                  where: { id: originalMessage.investorId },
+                  data: { pipelineStatus: newPipelineStatus }
+                });
+                console.log(`[Engine] Smart Routing: Moved investor ${originalMessage.investorId} to ${newPipelineStatus} because of ${finalClass}`);
+              }
+
+              // Update the campaign investor status to REPLIED to halt follow-ups if this was part of a campaign
+              // Bypassing halt if the AI classifies it as OUT_OF_OFFICE
+              if (
+                originalMessage.campaignInvestor && 
+                originalMessage.campaignInvestor.status !== 'REPLIED' &&
+                finalClass !== 'OUT_OF_OFFICE'
+              ) {
+                await db.campaignInvestor.update({
+                  where: { id: originalMessage.campaignInvestorId! },
+                  data: {
+                    status: 'REPLIED'
+                  }
+                });
+                console.log(`[Engine] Marked investor ${originalMessage.investorId} as REPLIED. Follow-ups halted.`);
+              } else if (finalClass === 'OUT_OF_OFFICE') {
+                console.log(`[Engine] Ignored auto-reply for investor ${originalMessage.investorId}. Campaign will continue.`);
+              }
             }
 
             processedReplies++;

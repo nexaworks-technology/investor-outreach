@@ -8,6 +8,7 @@ import { Users, Send, MessageSquare, Calendar, Target, AlertCircle, TrendingUp, 
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { PIPELINE_STATUS_CONFIG } from '@/types';
+import { AnalyticsCharts } from '@/components/dashboard/analytics-charts';
 
 // Utility for animating children with staggered delays
 const staggerClass = (index: number) => `animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-500 delay-[${index * 100}ms]`;
@@ -80,6 +81,12 @@ export default async function DashboardPage() {
             </Card>
           ))}
         </div>
+
+        {/* Analytics Charts */}
+        <AnalyticsCharts 
+          dailyStats={data.dailyStats} 
+          campaignMetrics={data.campaignMetrics} 
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
           {/* Pipeline Funnel */}

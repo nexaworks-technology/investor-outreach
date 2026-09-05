@@ -98,6 +98,50 @@ export async function getDashboardData() {
     };
   }));
   
+  // Calculate Daily Stats (Timeline) for the last 14 days
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
+  fourteenDaysAgo.setHours(0, 0, 0, 0);
+
+  const recentMessages = await db.emailMessage.findMany({
+    where: { 
+      workspaceId,
+      createdAt: { gte: fourteenDaysAgo }
+    },
+    select: {
+      direction: true,
+      status: true,
+      openCount: true,
+      createdAt: true
+    }
+  });
+
+  const dailyStatsMap: Record<string, { date: string; sent: number; opens: number; replies: number }> = {};
+  
+  // Initialize the last 14 days with 0
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - (13 - i));
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    dailyStatsMap[dateStr] = { date: dateStr, sent: 0, opens: 0, replies: 0 };
+  }
+
+  // Populate actual data
+  recentMessages.forEach(msg => {
+    const dateStr = msg.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (dailyStatsMap[dateStr]) {
+      if (msg.direction === 'OUTBOUND' && msg.status === 'SENT') {
+        dailyStatsMap[dateStr].sent += 1;
+        if (msg.openCount > 0) dailyStatsMap[dateStr].opens += 1;
+      }
+      if (msg.direction === 'INBOUND') {
+        dailyStatsMap[dateStr].replies += 1;
+      }
+    }
+  });
+
+  const dailyStats = Object.values(dailyStatsMap);
+
   return {
     metrics: {
       totalInvestors,
@@ -119,5 +163,6 @@ export async function getDashboardData() {
     recentActivity,
     upcomingFollowUps,
     campaignMetrics,
+    dailyStats,
   };
 }

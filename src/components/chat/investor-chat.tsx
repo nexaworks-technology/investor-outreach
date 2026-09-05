@@ -24,6 +24,8 @@ export interface Message {
   toEmail: string;
   sentAt: Date | null;
   createdAt: Date;
+  replyClassification?: string | null;
+  suggestedResponse?: string | null;
 }
 
 export interface Investor {
@@ -102,6 +104,11 @@ export default function InvestorChat({
       if (!subject && lastMsg) {
         let prefix = lastMsg.subject.toLowerCase().startsWith("re:") ? "" : "Re: ";
         setSubject(`${prefix}${lastMsg.subject}`);
+      }
+      
+      // Auto-fill suggested AI response
+      if (!body && lastMsg?.direction === "INBOUND" && lastMsg.suggestedResponse) {
+        setBody(lastMsg.suggestedResponse);
       }
     } else {
       setSubject("");
@@ -383,6 +390,13 @@ export default function InvestorChat({
                               {msg.subject && (
                                 <div className="text-xs text-muted-foreground mb-1 px-1 max-w-full truncate opacity-70">
                                   {msg.subject}
+                                </div>
+                              )}
+                              {!isOutbound && msg.replyClassification && (
+                                <div className="mb-1">
+                                  <Badge variant="secondary" className="text-[10px] bg-indigo-100 text-indigo-800 hover:bg-indigo-100 border-indigo-200 uppercase">
+                                    AI Detected: {msg.replyClassification.replace(/_/g, ' ')}
+                                  </Badge>
                                 </div>
                               )}
                               <div

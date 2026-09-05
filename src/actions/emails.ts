@@ -409,6 +409,8 @@ export async function getInvestorThread(investorId: string) {
       toEmail: true,
       sentAt: true,
       createdAt: true,
+      replyClassification: true,
+      suggestedResponse: true,
     },
     orderBy: { createdAt: "asc" },
   });
