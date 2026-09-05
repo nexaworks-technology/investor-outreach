@@ -14,6 +14,9 @@ export interface GenerationContext {
   senderName: string;
   baseSubjectTemplate: string;
   baseBodyTemplate: string;
+  recentMilestone?: string;
+  personalConnection?: string;
+  customIcebreaker?: string;
 }
 
 export function interpolateVariables(text: string, context: GenerationContext) {
@@ -48,6 +51,14 @@ export async function generatePersonalizedEmail(
   provider: string = "groq",
   model: string = "openai/gpt-oss-120b"
 ): Promise<{ subject: string; body: string }> {
+  if (context.customIcebreaker) {
+    console.log("[AI Gen] Using customIcebreaker (0-Token Bypass)");
+    const modifiedTemplate = context.baseBodyTemplate.replace(
+      /\[AI will generate personalization hook here based on thesis\]\n*/ig,
+      context.customIcebreaker + "\n\n"
+    );
+    return fallbackReplace({ ...context, baseBodyTemplate: modifiedTemplate });
+  }
   let keysToUse = apiKeys;
   
   if (!keysToUse || keysToUse.length === 0) {
@@ -88,7 +99,8 @@ Name: ${context.investorName}
 Firm: ${context.investorFirm}
 Thesis/Sector Focus: ${context.investorThesis || 'Generalist'}
 Notes/Recent Activity: ${context.investorNotes || 'N/A'}
-Recent Investments: ${context.investorNotes || 'N/A'}
+Recent Milestone: ${context.recentMilestone || 'N/A'}
+Personal Connection: ${context.personalConnection || 'N/A'}
 
 YOUR STARTUP:
 Company: ${context.companyName}

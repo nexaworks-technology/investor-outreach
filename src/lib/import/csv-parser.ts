@@ -2,10 +2,10 @@ import Papa from 'papaparse';
 import * as xlsx from 'xlsx';
 
 export const REQUIRED_FIELDS = ['name', 'firm', 'email'];
-export const OPTIONAL_FIELDS = [
   'partnerTitle', 'website', 'linkedinUrl', 'location', 
   'sectorThesis', 'stagePreference', 'typicalCheckSize', 
-  'portfolioCompanies', 'relationshipStatus', 'warmIntroSource', 'notes'
+  'portfolioCompanies', 'relationshipStatus', 'warmIntroSource', 'notes',
+  'recentMilestone', 'personalConnection', 'customIcebreaker'
 ];
 
 export async function parseCSV(fileContent: string): Promise<Record<string, string>[]> {
@@ -37,6 +37,9 @@ export function detectColumnMapping(headers: string[]): Record<string, string> {
     'website': ['website', 'url'],
     'linkedinUrl': ['linkedin', 'linkedin url', 'li'],
     'location': ['location', 'city'],
+    'recentMilestone': ['milestone', 'recent event', 'highlight', 'news', 'recent milestone'],
+    'personalConnection': ['connection', 'mutual', 'how we met', 'personal connection'],
+    'customIcebreaker': ['icebreaker', 'custom hook', 'first sentence', 'manual hook', 'custom icebreaker'],
   };
 
   for (const header of headers) {

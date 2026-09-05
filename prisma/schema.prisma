@@ -227,6 +227,9 @@ model Investor {
   relationshipStatus String?
   warmIntroSource    String?
   notes              String?            @db.Text
+  recentMilestone    String?            @db.Text
+  personalConnection String?            @db.Text
+  customIcebreaker   String?            @db.Text
   pipelineStatus     PipelineStatus     @default(DRAFT)
   emailValid         Boolean            @default(true)
   emailValidationNote String?

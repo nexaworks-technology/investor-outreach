@@ -330,6 +330,16 @@ export async function bulkImportInvestors(investors: {
   stagePreference?: string;
   location?: string;
   linkedinUrl?: string;
+  partnerTitle?: string;
+  website?: string;
+  sectorThesis?: string;
+  portfolioCompanies?: string;
+  relationshipStatus?: string;
+  warmIntroSource?: string;
+  notes?: string;
+  recentMilestone?: string;
+  personalConnection?: string;
+  customIcebreaker?: string;
 }[]) {
   const { userId } = await auth();
   if (!userId) throw new Error('Unauthorized');
@@ -355,6 +365,16 @@ export async function bulkImportInvestors(investors: {
     stagePreference: i.stagePreference || null,
     location: i.location || null,
     linkedinUrl: i.linkedinUrl || null,
+    partnerTitle: i.partnerTitle || null,
+    website: i.website || null,
+    sectorThesis: i.sectorThesis || null,
+    portfolioCompanies: i.portfolioCompanies || null,
+    relationshipStatus: i.relationshipStatus || null,
+    warmIntroSource: i.warmIntroSource || null,
+    notes: i.notes || null,
+    recentMilestone: i.recentMilestone || null,
+    personalConnection: i.personalConnection || null,
+    customIcebreaker: i.customIcebreaker || null,
     pipelineStatus: 'DRAFT' as any
   }));
 
