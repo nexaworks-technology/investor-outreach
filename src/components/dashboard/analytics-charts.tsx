@@ -85,7 +85,7 @@ export function AnalyticsCharts({ dailyStats, campaignMetrics }: AnalyticsCharts
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '8px' }} 
                     itemStyle={{ fontSize: '14px' }}
-                    formatter={(value: number) => [`${value}%`, undefined]}
+                    formatter={(value: any) => [`${value}%`, undefined]}
                   />
                   <Bar dataKey="openRate" name="Open Rate" fill="#0ea5e9" radius={[4, 4, 0, 0]} maxBarSize={50} />
                   <Bar dataKey="replyRate" name="Reply Rate" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={50} />
