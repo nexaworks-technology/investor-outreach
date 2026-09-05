@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/engine/sync-emails",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/engine/send-emails",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/engine/process-campaigns",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
