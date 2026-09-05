@@ -68,15 +68,18 @@ export async function generatePersonalizedEmail(
   keysToUse = [...keysToUse].sort(() => Math.random() - 0.5);
 
   const systemInstruction = `You are a world-class startup founder sending a highly personalized cold/warm email to a VC/Angel investor. 
-Your goal is to write a compelling, natural-sounding email that weaves the investor's specific thesis and background seamlessly into your pitch.
+Your primary goal is to generate a powerful, thesis-fit personalization hook (the first sentence) and integrate it with the provided base template.
 
 CURRENT 2026 OUTREACH GUIDANCE RULES:
 1. Focus on THESIS-FIT personalization, not fake flattery. Never use LinkedIn stalking trivia like "I noticed you went to Stanford".
-2. Use the provided BASE EMAIL TEMPLATE as a structural and tonal guide, but DO NOT just copy-paste it. You should rewrite the body to make it flow perfectly with your personalization.
-3. Establish why their specific portfolio, past investments, or stated thesis makes them relevant to your startup.
-4. Weave their thesis naturally into the pitch. For example, if they invest in B2B SaaS, frame your traction in a way that appeals to B2B SaaS investors.
-5. Retain the core facts, traction points, the funding ask, and the call-to-action (CTA) from the base template, but rephrase them if necessary to fit the flow of the personalized email.
-6. Make it sound highly natural, concise, confident, and professional (not robotic). It must sound like a human founder wrote this specifically for this one investor.
+2. Establish why their specific portfolio, past investments, or stated thesis makes them relevant to your startup.
+3. Example hooks:
+   - "I saw your investment in [Company], particularly your focus on software reducing operational bottlenecks in physical industries."
+   - "I’ve been following your thesis around AI applied to traditional industries, and [MyCompany] felt unusually aligned."
+   - "Your investment in [Company] caught my attention because it tackles the same pattern we see in textile manufacturing..."
+4. Keep the ENTIRE REST OF THE BASE TEMPLATE EXACTLY AS WRITTEN. Do not change the core pitch, traction points, the funding ask, or the call-to-action (CTA). 
+5. Replace the placeholder hook in the template with your generated thesis-fit hook.
+6. Make it sound natural, concise, and professional (not robotic).
 7. Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`;
 
   const userPrompt = `
@@ -85,6 +88,7 @@ Name: ${context.investorName}
 Firm: ${context.investorFirm}
 Thesis/Sector Focus: ${context.investorThesis || 'Generalist'}
 Notes/Recent Activity: ${context.investorNotes || 'N/A'}
+Recent Investments: ${context.investorNotes || 'N/A'}
 
 YOUR STARTUP:
 Company: ${context.companyName}
@@ -93,14 +97,14 @@ Problem we solve: ${context.fundraisingProblem}
 Our Solution: ${context.fundraisingSolution}
 Sender: ${context.senderName}
 
-BASE EMAIL TEMPLATE (Use as a guide for tone, facts, and structure):
+BASE EMAIL TEMPLATE:
 Subject: ${context.baseSubjectTemplate}
 Body: 
 ${context.baseBodyTemplate}
 
 INSTRUCTIONS: 
-Rewrite the base email template to create a highly personalized, thesis-driven email for this specific investor. 
-Maintain the core pitch and CTA, but weave the investor's thesis and background naturally throughout the email.
+Generate a thesis-fit opening sentence based on the INVESTOR PROFILE. 
+Insert it at the beginning of the Body, replacing any generic greeting/hook, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
 Return the final subject and body strictly as JSON.`;
 
   let lastError: any = null;
