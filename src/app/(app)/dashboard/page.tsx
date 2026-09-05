@@ -15,7 +15,7 @@ const staggerClass = (index: number) => `animate-in fade-in slide-in-from-bottom
 export default async function DashboardPage() {
   try {
     const data = await getDashboardData();
-    const { metrics, pipelineCounts, recentActivity, upcomingFollowUps } = data;
+    const { metrics, pipelineCounts, recentActivity, upcomingFollowUps, campaignMetrics } = data;
 
     const cards = [
       { label: 'Total Investors', value: metrics.totalInvestors, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -168,6 +168,67 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Campaign Performance */}
+        {campaignMetrics && campaignMetrics.length > 0 && (
+          <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-400 fill-mode-both bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Campaign Performance
+              </CardTitle>
+              <CardDescription>Track conversion metrics across your active sequences</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {campaignMetrics.map((campaign) => (
+                  <div key={campaign.id} className="space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-medium">{campaign.name}</span>
+                      <span className="text-muted-foreground">{campaign.sent} sent</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Open Rate Bar */}
+                      <div className="space-y-1 relative group cursor-default">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Opens</span>
+                          <span className="font-medium text-foreground">{campaign.openRate}%</span>
+                        </div>
+                        <div className="h-2 bg-secondary/50 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-sky-500 rounded-full transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.max(campaign.openRate, 2)}%` }}
+                          />
+                        </div>
+                        <div className="absolute top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900 text-zinc-100 text-[10px] px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-10">
+                          {campaign.opens} / {campaign.sent} opened
+                        </div>
+                      </div>
+                      
+                      {/* Reply Rate Bar */}
+                      <div className="space-y-1 relative group cursor-default">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Replies</span>
+                          <span className="font-medium text-foreground">{campaign.replyRate}%</span>
+                        </div>
+                        <div className="h-2 bg-secondary/50 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.max(campaign.replyRate, 2)}%` }}
+                          />
+                        </div>
+                        <div className="absolute top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900 text-zinc-100 text-[10px] px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-10">
+                          {campaign.replies} / {campaign.sent} replied
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recent Activity */}
         <Card className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500 fill-mode-both bg-card/50 backdrop-blur-sm">

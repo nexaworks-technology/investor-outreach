@@ -77,6 +77,34 @@ export async function getDashboardData() {
     orderBy: { nextSendAt: 'asc' },
     take: 5,
   });
+
+  // Campaign specific metrics
+  const activeCampaignList = await db.campaign.findMany({
+    where: { workspaceId, deletedAt: null, status: 'ACTIVE' },
+    select: { id: true, name: true }
+  });
+
+  const campaignMetrics = await Promise.all(activeCampaignList.map(async (c) => {
+    const sent = await db.emailMessage.count({
+      where: { workspaceId, direction: 'OUTBOUND', status: 'SENT', campaignInvestor: { campaignId: c.id } }
+    });
+    const opens = await db.emailMessage.count({
+      where: { workspaceId, direction: 'OUTBOUND', openCount: { gt: 0 }, campaignInvestor: { campaignId: c.id } }
+    });
+    const replies = await db.emailMessage.count({
+      where: { workspaceId, direction: 'INBOUND', campaignInvestor: { campaignId: c.id } }
+    });
+    
+    return {
+      id: c.id,
+      name: c.name,
+      sent,
+      opens,
+      replies,
+      openRate: sent > 0 ? Math.round((opens / sent) * 100) : 0,
+      replyRate: sent > 0 ? Math.round((replies / sent) * 100) : 0,
+    };
+  }));
   
   return {
     metrics: {
@@ -101,5 +129,6 @@ export async function getDashboardData() {
     })),
     recentActivity,
     upcomingFollowUps,
+    campaignMetrics,
   };
 }

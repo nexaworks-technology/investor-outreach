@@ -1,7 +1,7 @@
 import { getInvestorsWithThreads } from '@/actions/emails';
 import InvestorChat from '@/components/chat/investor-chat';
 
-export default async function InboxPage() {
+export default async function InboxPage({ searchParams }: { searchParams: { investorId?: string } }) {
   const investors = await getInvestorsWithThreads();
 
   // Build the initial threads map
@@ -18,6 +18,7 @@ export default async function InboxPage() {
       <InvestorChat
         investors={investorList}
         initialThreads={initialThreads}
+        selectedInvestorId={searchParams.investorId}
       />
     </div>
   );

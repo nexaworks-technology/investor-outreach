@@ -7,7 +7,10 @@ import {
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 
 export function InvestorListView({ search }: { search: string }) {
@@ -54,6 +57,7 @@ export function InvestorListView({ search }: { search: string }) {
             <TableHead>Tags</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Added</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -86,6 +90,13 @@ export function InvestorListView({ search }: { search: string }) {
               <TableCell className="text-sm text-muted-foreground">{inv.location || '-'}</TableCell>
               <TableCell className="text-sm text-muted-foreground">
                 {formatDistanceToNow(new Date(inv.createdAt), { addSuffix: true })}
+              </TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                <Link href={`/inbox?investorId=${inv.id}`}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                    <MessageSquare className="h-4 w-4" />
+                  </Button>
+                </Link>
               </TableCell>
             </TableRow>
           ))}
