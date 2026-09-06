@@ -112,6 +112,8 @@ model WorkspaceSettings {
   dailySummaryEnabled Boolean  @default(true)
   dailySummaryTime   String?
   complianceFooter   String?
+  outreachType       String    @default("VC_INVESTOR")
+  customSystemPrompt String?   @db.Text
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 

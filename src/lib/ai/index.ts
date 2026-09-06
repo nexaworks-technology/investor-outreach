@@ -17,6 +17,7 @@ export interface GenerationContext {
   recentMilestone?: string;
   personalConnection?: string;
   customIcebreaker?: string;
+  systemPrompt?: string;
 }
 
 export function interpolateVariables(text: string, context: GenerationContext) {
@@ -78,7 +79,7 @@ export async function generatePersonalizedEmail(
   // Shuffle keys to load-balance across all available keys
   keysToUse = [...keysToUse].sort(() => Math.random() - 0.5);
 
-  const systemInstruction = `You are a world-class startup founder sending a highly personalized cold/warm email to a VC/Angel investor. 
+  const systemInstruction = context.systemPrompt || `You are a world-class startup founder sending a highly personalized cold/warm email to a VC/Angel investor. 
 Your primary goal is to generate a powerful, thesis-fit personalization hook (the first sentence) and integrate it with the provided base template.
 
 CURRENT 2026 OUTREACH GUIDANCE RULES:

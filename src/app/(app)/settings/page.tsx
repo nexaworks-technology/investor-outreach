@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Building, Mail, Sliders, Cpu, Shield, Save, CheckCircle2, Plus } from "lucide-react";
 import { getMailboxes, disconnectMailbox, getGoogleAuthUrl } from "@/actions/mailbox";
 import { SmtpConnectDialog } from "@/components/mailboxes/smtp-connect-dialog";
+import { AISettings } from "@/components/settings/ai-settings";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -172,8 +173,8 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="ai">
-            <div className="text-center py-10 text-muted-foreground">
-               AI settings goes here.
+            <div className="py-4">
+               <AISettings />
              </div>
           </TabsContent>
           

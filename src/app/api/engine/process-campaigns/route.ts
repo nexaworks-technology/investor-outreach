@@ -110,6 +110,7 @@ export async function POST(req: Request) {
           recentMilestone: campInv.investor.recentMilestone || "",
           personalConnection: campInv.investor.personalConnection || "",
           customIcebreaker: campInv.investor.customIcebreaker || "",
+          systemPrompt: campaign.workspace.settings?.customSystemPrompt || undefined,
           companyName: campaign.workspace.companyProfile?.companyName || "Our Startup",
           oneLinePitch: campaign.workspace.companyProfile?.oneLinePitch || "",
           fundraisingProblem: campaign.workspace.companyProfile?.fundraisingBrief?.problem || "",

@@ -182,6 +182,8 @@ export async function updateWorkspaceSettings(data: {
   dailySummaryEnabled?: boolean;
   dailySummaryTime?: string;
   complianceFooter?: string;
+  outreachType?: string;
+  customSystemPrompt?: string | null;
 }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
@@ -257,4 +259,16 @@ export async function getOnboardingStatus() {
   } catch {
     return { step: "company" as const, completed: [], data: null };
   }
+}
+
+export async function getWorkspaceSettings() {
+  const { userId } = await auth();
+  if (!userId) return null;
+
+  const workspace = await db.workspace.findUnique({
+    where: { clerkUserId: userId },
+    include: { settings: true }
+  });
+
+  return workspace?.settings || null;
 }
