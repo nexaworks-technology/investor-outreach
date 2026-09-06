@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string }
+  searchParams: Promise<{ error?: string }>
 }) {
+  const resolvedSearchParams = await searchParams;
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
       <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -32,9 +33,9 @@ export default function LoginPage({
           </p>
         </div>
 
-        {searchParams?.error && (
+        {resolvedSearchParams?.error && (
           <div className="mb-4 rounded-md bg-rose-50 p-3 text-sm text-rose-500 dark:bg-rose-950/50 dark:text-rose-400">
-            {searchParams.error}
+            {resolvedSearchParams.error}
           </div>
         )}
 
