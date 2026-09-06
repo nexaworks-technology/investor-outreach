@@ -51,7 +51,8 @@ export function AISettings() {
     }
   };
 
-  const handleTypeChange = (value: string) => {
+  const handleTypeChange = (value: string | null) => {
+    if (!value) return;
     setOutreachType(value);
     if (value !== "CUSTOM") {
       setCustomSystemPrompt(PRESETS[value as keyof typeof PRESETS]);
