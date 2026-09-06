@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 import * as xlsx from 'xlsx';
 
 export const REQUIRED_FIELDS = ['name', 'firm', 'email'];
+export const OPTIONAL_FIELDS = [
   'partnerTitle', 'website', 'linkedinUrl', 'location', 
   'sectorThesis', 'stagePreference', 'typicalCheckSize', 
   'portfolioCompanies', 'relationshipStatus', 'warmIntroSource', 'notes',
