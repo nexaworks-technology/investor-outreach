@@ -20,7 +20,8 @@ export default async function AppLayout({
       where: { clerkUserId: userId },
       include: { companyProfile: true, settings: true }
     });
-  } catch (e) {
+  } catch (e: any) {
+    if (e?.message === 'NEXT_REDIRECT') throw e;
     // DB not available - render layout anyway for development
     console.error("Database connection failed, using fallback layout mode", e);
   }

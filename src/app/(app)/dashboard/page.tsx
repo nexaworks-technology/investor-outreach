@@ -264,6 +264,7 @@ export default async function DashboardPage() {
       </div>
     );
   } catch (error: any) {
+    if (error?.message === 'NEXT_REDIRECT') throw error;
     console.error("Dashboard error:", error);
     // Fallback/Setup State
     return (
