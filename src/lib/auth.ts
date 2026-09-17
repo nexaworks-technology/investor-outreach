@@ -1,4 +1,5 @@
 import { db } from './db';
+import { redirect } from 'next/navigation';
 
 import { createClient } from '@/utils/supabase/server';
 
@@ -12,7 +13,7 @@ export async function getWorkspace() {
   const { userId } = await auth();
   
   if (!userId) {
-    throw new Error('Unauthorized');
+    redirect('/login');
   }
 
   let workspace = await db.workspace.findUnique({

@@ -1,10 +1,10 @@
-import { login } from '@/actions/auth'
+import { signup } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
-export default async function LoginPage({
+export default async function SignupPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>
@@ -28,9 +28,9 @@ export default async function LoginPage({
               <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
             </svg>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Enter your email to sign in to your account
+            Enter your details below to get started
           </p>
         </div>
 
@@ -61,13 +61,13 @@ export default async function LoginPage({
             />
           </div>
           <div className="flex flex-col gap-4 pt-2">
-            <Button type="submit" formAction={login} className="w-full">
-              Sign In
+            <Button type="submit" formAction={signup} className="w-full">
+              Sign Up
             </Button>
             <div className="text-center text-sm text-zinc-500">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-zinc-900 underline underline-offset-4 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/login" className="text-zinc-900 underline underline-offset-4 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300">
+                Log in
               </Link>
             </div>
           </div>
