@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { generatePersonalizedEmail } from '@/lib/ai';
+import { Client } from "@upstash/qstash";
 
-export const maxDuration = 300; // Allow 5 minutes on Vercel
+const qstash = process.env.QSTASH_TOKEN ? new Client({ token: process.env.QSTASH_TOKEN }) : null;
+
+export const maxDuration = 300; 
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +13,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log("[Engine] Starting campaign processor...");
+    if (!qstash) {
+      console.error("[Engine] QSTASH_TOKEN is missing. Cannot dispatch emails.");
+      return NextResponse.json({ error: 'QSTASH_TOKEN missing' }, { status: 500 });
+    }
+
+    const host = req.headers.get('host') || process.env.NEXT_PUBLIC_APP_URL?.replace('https://', '').replace('http://', '');
+    const protocol = host?.includes('localhost') ? 'http' : 'https';
+    const workerUrl = `${protocol}://${host}/api/engine/process-single-email`;
+
+    console.log(`[Engine] Starting campaign dispatcher... Target worker: ${workerUrl}`);
     
     // Find active campaigns
     const campaigns = await db.campaign.findMany({
@@ -20,155 +31,56 @@ export async function POST(req: Request) {
         deletedAt: null
       },
       include: {
-        mailbox: true,
-        workspace: {
-          include: {
-            settings: true,
-            companyProfile: {
-              include: { fundraisingBrief: true }
-            }
-          }
-        },
-        sequenceSteps: { orderBy: { order: "asc" } },
         campaignInvestors: {
           where: {
             status: { in: ["PENDING", "IN_PROGRESS"] },
-            // only process those where nextSendAt is null or past
             OR: [
               { nextSendAt: null },
               { nextSendAt: { lte: new Date() } }
             ]
-          },
-          include: { investor: true }
+          }
         }
       }
     });
 
     console.log(`[Engine] Found ${campaigns.length} active campaigns to process.`);
-    let processedCount = 0;
+    let dispatchedCount = 0;
 
     for (const campaign of campaigns) {
-      if (!campaign.mailbox) continue;
-      
       const dailyLimit = campaign.dailySendLimit || 20;
-      let sentToday = 0;
+      
+      // Calculate how many emails have already been queued/sent today for this campaign
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
 
-      for (const campInv of campaign.campaignInvestors) {
-        if (sentToday >= dailyLimit) break;
-
-        const currentStepOrder = campInv.currentStepOrder;
-        const step = campaign.sequenceSteps.find(s => s.order === currentStepOrder);
-        
-        if (!step) {
-          // Campaign finished for this investor
-          await db.campaignInvestor.update({
-            where: { id: campInv.id },
-            data: { status: "COMPLETED" }
-          });
-          continue;
+      const emailsSentToday = await db.emailMessage.count({
+        where: {
+          workspaceId: campaign.workspaceId,
+          campaignInvestorId: { not: null },
+          createdAt: { gte: startOfToday }
         }
+      });
 
-        const toEmail = campInv.investor.email;
-        if (!toEmail) continue;
+      const remainingToSend = Math.max(0, dailyLimit - emailsSentToday);
+      if (remainingToSend === 0) continue;
 
-        let rawSubject = step.subjectTemplate || "";
-        let rawBody = step.bodyTemplate || "";
-        let templateAttachments: string[] = [];
+      const toProcess = campaign.campaignInvestors.slice(0, remainingToSend);
 
-        if (step.templateId) {
-          const template = await db.emailTemplate.findUnique({ where: { id: step.templateId } });
-          if (template) {
-            rawSubject = template.subject || rawSubject;
-            rawBody = template.body || rawBody;
-            templateAttachments = template.attachments || [];
-          }
-        }
-
-        if (!rawSubject && !rawBody) {
-          console.warn(`[Engine] Skipping investor ${campInv.id} - No template found for step ${currentStepOrder}`);
-          await db.campaignInvestor.update({
-            where: { id: campInv.id },
-            data: { 
-              status: "ERROR", 
-              skipReason: "No template provided for this step" 
-            }
-          });
-          continue;
-        }
-
-        // AI Personalization
-        const apiKeys = campaign.workspace.settings?.llmApiKeys as string[] || [];
-        const provider = campaign.workspace.settings?.llmProvider || "groq";
-        const model = campaign.workspace.settings?.llmModel || "llama-3.3-70b-versatile";
-
-        const { subject, body } = await generatePersonalizedEmail(apiKeys, {
-          investorName: campInv.investor.name || "",
-          investorFirm: campInv.investor.firm || "",
-          investorThesis: campInv.investor.sectorThesis || "",
-          investorStagePreference: campInv.investor.stagePreference || "",
-          investorNotes: campInv.investor.notes || "",
-          recentMilestone: campInv.investor.recentMilestone || "",
-          personalConnection: campInv.investor.personalConnection || "",
-          customIcebreaker: campInv.investor.customIcebreaker || "",
-          portfolioCompanies: campInv.investor.portfolioCompanies || "",
-          location: campInv.investor.location || "",
-          linkedinUrl: campInv.investor.linkedinUrl || "",
-          website: campInv.investor.website || "",
-          typicalCheckSize: campInv.investor.typicalCheckSize || "",
-          warmIntroSource: campInv.investor.warmIntroSource || "",
-          relationshipStatus: campInv.investor.relationshipStatus || "",
-          partnerTitle: campInv.investor.partnerTitle || "",
-          systemPrompt: campaign.workspace.settings?.customSystemPrompt || undefined,
-          companyName: campaign.workspace.companyProfile?.companyName || "Our Startup",
-          oneLinePitch: campaign.workspace.companyProfile?.oneLinePitch || "",
-          fundraisingProblem: campaign.workspace.companyProfile?.fundraisingBrief?.problem || "",
-          fundraisingSolution: campaign.workspace.companyProfile?.fundraisingBrief?.solution || "",
-          senderName: campaign.mailbox.displayName || campaign.mailbox.email,
-          baseSubjectTemplate: rawSubject,
-          baseBodyTemplate: rawBody,
-        }, provider, model);
-
-        // Determine if approval required
-        const requireApproval = step.requiresApproval || campaign.mode === "REVIEW_BEFORE_SEND";
-        
-        await db.emailMessage.create({
-          data: {
-            workspaceId: campaign.workspaceId,
-            investorId: campInv.investor.id,
-            campaignInvestorId: campInv.id,
-            sequenceStepId: step.id,
-            mailboxId: campaign.mailboxId,
-            direction: "OUTBOUND",
-            status: requireApproval ? "PENDING_APPROVAL" : "QUEUED",
-            fromEmail: campaign.mailbox.email,
-            toEmail,
-            subject,
-            body,
-            attachments: templateAttachments,
+      for (const campInv of toProcess) {
+        // Dispatch to QStash
+        await qstash.publishJSON({
+          url: workerUrl,
+          body: { campaignInvestorId: campInv.id },
+          headers: {
+            Authorization: `Bearer ${process.env.CRON_SECRET}`
           }
         });
-
-        // Determine next send date based on the NEXT step's delay
-        const nextStep = campaign.sequenceSteps.find(s => s.order === currentStepOrder + 1);
-        
-        await db.campaignInvestor.update({
-          where: { id: campInv.id },
-          data: {
-            status: "IN_PROGRESS",
-            currentStepOrder: currentStepOrder + 1,
-            // If there's a next step, add its delay. If no next step, set to null (finished).
-            nextSendAt: nextStep 
-              ? new Date(Date.now() + (nextStep.delayDays * 24 * 60 * 60 * 1000))
-              : null
-          }
-        });
-        
-        processedCount++;
-        sentToday++;
+        dispatchedCount++;
       }
     }
 
-    return NextResponse.json({ success: true, processedCount });
+    console.log(`[Engine] Successfully dispatched ${dispatchedCount} tasks to QStash.`);
+    return NextResponse.json({ success: true, dispatchedCount });
   } catch (error: any) {
     console.error("[Engine] process-campaigns error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
