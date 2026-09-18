@@ -11,17 +11,20 @@ import { toast } from "sonner";
 
 const PRESETS = {
   VC_INVESTOR: `You are a world-class startup founder sending a highly personalized cold/warm email to a VC/Angel investor.
-You will be provided with their "Recent Milestone", "Personal Connection", or "Sector Thesis".
-Your only job is to write ONE single, natural-sounding opening sentence (a hook) that smoothly transitions into a pitch.
-Do not write the full email. Just the opening sentence. Keep it extremely concise, professional, and warm.`,
+Your goal is to write a 1-2 sentence personalization hook based on their "Recent Milestone", "Personal Connection", or "Sector Thesis".
+Replace the {{ai_hook}} variable in the provided template with your hook, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
+Make it sound natural, concise, and professional (not robotic).
+Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`,
   B2B_SALES: `You are a top-performing B2B Sales Executive reaching out to a potential client.
-You will be provided with their "Recent Milestone" (e.g. recent company news) and "Personal Connection".
-Your only job is to write ONE single, natural-sounding opening sentence that highlights their recent news or pain point, establishing instant relevance.
-Do not write the full email. Just the opening sentence. Keep it concise, value-driven, and professional.`,
+Your goal is to write a 1-2 sentence personalization hook based on their recent company news, sector, or portfolio.
+Replace the {{ai_hook}} variable in the provided template with your hook, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
+Make it sound natural, concise, and professional (not robotic).
+Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`,
   RECRUITING: `You are a startup founder reaching out to a top-tier candidate on LinkedIn/Email.
-You will be provided with their "Recent Milestone" (e.g. an open source contribution or job change) and "Personal Connection".
-Your only job is to write ONE single, natural-sounding opening sentence that compliments their recent work and sparks their interest.
-Do not write the full email. Just the opening sentence. Keep it concise, flattering, and intriguing.`,
+Your goal is to write a 1-2 sentence personalization hook based on their recent work, GitHub, or background.
+Replace the {{ai_hook}} variable in the provided template with your hook, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
+Make it sound natural, concise, and professional (not robotic).
+Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`,
   CUSTOM: ""
 };
 

@@ -7,10 +7,21 @@ export interface GenerationContext {
   investorThesis: string;
   investorStagePreference: string;
   investorNotes: string;
+  
+  // New CSV fields
+  portfolioCompanies?: string;
+  location?: string;
+  linkedinUrl?: string;
+  website?: string;
+  typicalCheckSize?: string;
+  warmIntroSource?: string;
+  relationshipStatus?: string;
+  partnerTitle?: string;
+
   companyName: string;
   oneLinePitch: string;
-  fundraisingProblem: string;
-  fundraisingSolution: string;
+  fundraisingProblem?: string;
+  fundraisingSolution?: string;
   senderName: string;
   baseSubjectTemplate: string;
   baseBodyTemplate: string;
@@ -37,7 +48,7 @@ export function interpolateVariables(text: string, context: GenerationContext) {
     .replace(/{{oneLinePitch}}/ig, context.oneLinePitch || "")
     .replace(/{{senderName}}/ig, context.senderName || "")
     .replace(/{{sender\.name}}/ig, context.senderName || "")
-    .replace(/\[AI will generate personalization hook here based on thesis\]\n*/ig, "");
+    .replace(/{{ai_hook}}\n*/ig, "");
 }
 
 function fallbackReplace(context: GenerationContext) {
@@ -55,7 +66,7 @@ export async function generatePersonalizedEmail(
   if (context.customIcebreaker) {
     console.log("[AI Gen] Using customIcebreaker (0-Token Bypass)");
     const modifiedTemplate = context.baseBodyTemplate.replace(
-      /\[AI will generate personalization hook here based on thesis\]\n*/ig,
+      /{{ai_hook}}\n*/ig,
       context.customIcebreaker + "\n\n"
     );
     return fallbackReplace({ ...context, baseBodyTemplate: modifiedTemplate });
@@ -79,35 +90,33 @@ export async function generatePersonalizedEmail(
   // Shuffle keys to load-balance across all available keys
   keysToUse = [...keysToUse].sort(() => Math.random() - 0.5);
 
-  const systemInstruction = context.systemPrompt || `You are a world-class startup founder sending a highly personalized cold/warm email to a VC/Angel investor. 
-Your primary goal is to generate a powerful, thesis-fit personalization hook (the first sentence) and integrate it with the provided base template.
+  const systemInstruction = context.systemPrompt || `You are an expert sales and outbound professional writing a highly personalized email.
+Your primary goal is to generate a powerful, context-fit personalization hook (1-2 sentences) and inject it into the base template exactly where the {{ai_hook}} variable is.
 
-CURRENT 2026 OUTREACH GUIDANCE RULES:
-1. Focus on THESIS-FIT personalization, not fake flattery. Never use LinkedIn stalking trivia like "I noticed you went to Stanford".
-2. Establish why their specific portfolio, past investments, or stated thesis makes them relevant to your startup.
-3. Example hooks:
-   - "I saw your investment in [Company], particularly your focus on software reducing operational bottlenecks in physical industries."
-   - "I’ve been following your thesis around AI applied to traditional industries, and [MyCompany] felt unusually aligned."
-   - "Your investment in [Company] caught my attention because it tackles the same pattern we see in textile manufacturing..."
-4. Keep the ENTIRE REST OF THE BASE TEMPLATE EXACTLY AS WRITTEN. Do not change the core pitch, traction points, the funding ask, or the call-to-action (CTA). 
-5. Replace the placeholder hook in the template with your generated thesis-fit hook.
+CURRENT OUTREACH GUIDANCE RULES:
+1. Focus on relevant business context, not fake flattery. Use their company details, sector focus, recent milestones, or portfolio.
+2. Establish why their specific context makes them highly relevant to your product/company.
+3. Keep the ENTIRE REST OF THE BASE TEMPLATE EXACTLY AS WRITTEN. Do not change the core pitch, traction points, or call-to-action (CTA). 
+4. Replace the {{ai_hook}} variable in the template with your generated hook.
+5. If the {{ai_hook}} variable is NOT present in the template, insert your hook naturally at the beginning of the body.
 6. Make it sound natural, concise, and professional (not robotic).
 7. Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`;
 
   const userPrompt = `
-INVESTOR PROFILE:
+LEAD / CONTACT PROFILE:
 Name: ${context.investorName}
-Firm: ${context.investorFirm}
-Thesis/Sector Focus: ${context.investorThesis || 'Generalist'}
-Notes/Recent Activity: ${context.investorNotes || 'N/A'}
+Company/Firm: ${context.investorFirm}
+Sector/Context: ${context.investorThesis || 'Generalist'}
+Location: ${context.location || 'N/A'}
+Notes: ${context.investorNotes || 'N/A'}
 Recent Milestone: ${context.recentMilestone || 'N/A'}
 Personal Connection: ${context.personalConnection || 'N/A'}
+Portfolio/Clients: ${context.portfolioCompanies || 'N/A'}
+Website: ${context.website || 'N/A'}
 
-YOUR STARTUP:
+YOUR COMPANY:
 Company: ${context.companyName}
 Pitch: ${context.oneLinePitch}
-Problem we solve: ${context.fundraisingProblem}
-Our Solution: ${context.fundraisingSolution}
 Sender: ${context.senderName}
 
 BASE EMAIL TEMPLATE:
@@ -116,8 +125,8 @@ Body:
 ${context.baseBodyTemplate}
 
 INSTRUCTIONS: 
-Generate a thesis-fit opening sentence based on the INVESTOR PROFILE. 
-Insert it at the beginning of the Body, replacing any generic greeting/hook, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
+Generate a relevant, personalized opening hook based on the LEAD PROFILE. 
+Insert it into the Body replacing the {{ai_hook}} variable, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
 Return the final subject and body strictly as JSON.`;
 
   let lastError: any = null;

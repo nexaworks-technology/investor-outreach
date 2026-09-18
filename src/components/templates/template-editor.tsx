@@ -18,22 +18,20 @@ import { createClient } from "@/utils/supabase/client";
 
 // Mock available fields
 const AVAILABLE_MERGE_FIELDS = [
+  "{{ai_hook}}",
   "{{firstName}}",
   "{{lastName}}",
-  "{{fundName}}",
   "{{companyName}}",
   "{{oneLinePitch}}",
-  "{{recentInvestment}}",
   "{{senderName}}"
 ];
 
 const MOCK_DATA = {
+  ai_hook: "I noticed your firm recently invested in Acme and your focus on B2B SaaS efficiency. I thought our solution would be incredibly relevant.",
   firstName: "Marc",
   lastName: "Andreessen",
-  fundName: "a16z",
   companyName: "Acme Inc",
   oneLinePitch: "an AI-powered CRM for fundraising",
-  recentInvestment: "Stripe",
   senderName: "Sahil"
 };
 
