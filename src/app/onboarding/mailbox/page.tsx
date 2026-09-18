@@ -1,7 +1,7 @@
 import { requireWorkspace } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import { getGoogleAuthUrl } from '@/actions/mailbox';
@@ -71,9 +71,9 @@ export default async function OnboardingMailboxPage() {
         )}
       </CardContent>
       <CardFooter className="flex justify-between border-t border-zinc-100 dark:border-zinc-800 pt-6">
-        <Button variant="ghost" asChild>
-          <Link href="/onboarding/profile">Back</Link>
-        </Button>
+        <Link href="/onboarding/profile" className={buttonVariants({ variant: 'ghost' })}>
+          Back
+        </Link>
         <form action={handleFinish}>
           <Button type="submit" variant={mailboxes.length > 0 ? "default" : "secondary"}>
             {mailboxes.length > 0 ? "Complete Onboarding" : "Skip for now"}

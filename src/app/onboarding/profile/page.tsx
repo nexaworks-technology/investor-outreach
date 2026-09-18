@@ -1,7 +1,7 @@
 import { requireWorkspace } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -102,9 +102,9 @@ export default async function OnboardingProfilePage() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between border-t border-zinc-100 dark:border-zinc-800 pt-6">
-          <Button variant="ghost" asChild>
-            <Link href="/onboarding">Back</Link>
-          </Button>
+          <Link href="/onboarding" className={buttonVariants({ variant: 'ghost' })}>
+            Back
+          </Link>
           <Button type="submit">Continue to Connect Email</Button>
         </CardFooter>
       </form>
