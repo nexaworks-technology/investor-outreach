@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Client } from "@upstash/qstash";
 
-const qstash = process.env.QSTASH_TOKEN ? new Client({ token: process.env.QSTASH_TOKEN }) : null;
+const qstash = process.env.QSTASH_TOKEN ? new Client({ token: process.env.QSTASH_TOKEN, baseUrl: process.env.QSTASH_URL || "https://qstash.upstash.io" }) : null;
 
 export const maxDuration = 300; 
 
