@@ -75,7 +75,7 @@ export default async function ProfilePage() {
               <CardTitle>Authentication</CardTitle>
             </div>
             <CardDescription>
-              Manage how you sign in to Investor OS.
+              Manage how you sign in to NexaWorks Outbound.
             </CardDescription>
           </CardHeader>
           <CardContent>

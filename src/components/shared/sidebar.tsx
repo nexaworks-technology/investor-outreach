@@ -43,7 +43,7 @@ import { cn } from "@/lib/utils";
 const mainNavItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Inbox", href: "/inbox", icon: MessageSquare },
-  { name: "Investors", href: "/investors", icon: Users },
+  { name: "Leads", href: "/investors", icon: Users },
   { name: "Campaigns", href: "/campaigns", icon: Target },
   { name: "Templates", href: "/templates", icon: FileText },
   { name: "Audit Log", href: "/audit-log", icon: Shield },

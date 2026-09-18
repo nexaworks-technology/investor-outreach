@@ -273,7 +273,7 @@ export default async function DashboardPage() {
           <Target className="h-10 w-10 text-primary" />
         </div>
         <div className="text-red-500 mb-4">{error.message || String(error)}</div>
-        <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to Investor OS</h1>
+        <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to NexaWorks Outbound</h1>
         <p className="text-muted-foreground text-lg mb-8">
           Your workspace is almost ready. Let's get started by importing your target investors or connecting your email.
         </p>

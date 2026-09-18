@@ -1,72 +1,47 @@
-"use client";
+import { auth, getWorkspace } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { Check, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const steps = [
-  { id: "company", title: "Company", href: "/onboarding/company" },
-  { id: "pitch-deck", title: "Pitch Deck", href: "/onboarding/pitch-deck" },
-  { id: "connect-gmail", title: "Connect Gmail", href: "/onboarding/connect-gmail" },
-  { id: "import-investors", title: "Import Investors", href: "/onboarding/import-investors" },
-  { id: "review", title: "Review", href: "/onboarding/review" },
-];
-
-export default function OnboardingLayout({
+export default async function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const currentStepIndex = steps.findIndex((step) => pathname.includes(step.id));
+  const { userId } = await auth();
+  if (!userId) redirect('/login');
+
+  const { workspace } = await getWorkspace();
+  if (workspace.isOnboarded) {
+    redirect('/dashboard');
+  }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
-      <div className="w-full max-w-4xl px-4 py-8 flex flex-col gap-8">
-        <header className="flex flex-col gap-4">
-          <div className="font-bold text-xl">Investor Outreach OS</div>
-          
-          <div className="relative">
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-muted -z-10 -translate-y-1/2" />
-            <ol className="flex justify-between items-center w-full relative z-10">
-              {steps.map((step, index) => {
-                const isActive = index === currentStepIndex;
-                const isCompleted = index < currentStepIndex;
-                
-                return (
-                  <li key={step.id} className="flex flex-col items-center gap-2">
-                    <Link
-                      href={step.href}
-                      className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors bg-background",
-                        isActive
-                          ? "border-primary text-primary"
-                          : isCompleted
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-muted text-muted-foreground"
-                      )}
-                    >
-                      {isCompleted ? <Check className="h-4 w-4" /> : index + 1}
-                    </Link>
-                    <span
-                      className={cn(
-                        "text-xs font-medium hidden sm:block",
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      )}
-                    >
-                      {step.title}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <div className="mb-8 text-center">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 mb-4 shadow-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6"
+            >
+              <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+            </svg>
           </div>
-        </header>
-
-        <main className="w-full bg-card rounded-xl border shadow-sm p-6 sm:p-8">
-          {children}
-        </main>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Welcome to NexaWorks
+          </h1>
+          <p className="text-zinc-500 dark:text-zinc-400 mt-2">
+            Let's get your workspace set up in a few quick steps.
+          </p>
+        </div>
+        
+        {children}
+        
       </div>
     </div>
   );

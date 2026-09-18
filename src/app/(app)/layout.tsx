@@ -26,12 +26,10 @@ export default async function AppLayout({
     console.error("Database connection failed, using fallback layout mode", e);
   }
   
-  // If DB works but workspace not found, redirect to onboarding
-  // Note: this assumes onboarding creates the workspace
-  // Uncomment when DB is ready:
-  // if (!workspace && process.env.NODE_ENV !== 'development') {
-  //   redirect('/onboarding/company');
-  // }
+  // If DB works but workspace is not fully onboarded, redirect to the new onboarding flow
+  if (workspace && !workspace.isOnboarded) {
+    redirect('/onboarding');
+  }
   
   return (
     <div className="min-h-screen bg-background">
