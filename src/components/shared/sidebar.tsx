@@ -7,17 +7,14 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
-  Mail,
   Target,
-  FileText,
   Settings,
-  BarChart3,
-  ClipboardList,
+  FileText,
+  MessageSquare,
   Shield,
   ChevronLeft,
   ChevronRight,
-  Rocket,
-  MessageSquare
+  CheckSquare
 } from "lucide-react";
 import {
   Tooltip,
@@ -43,6 +40,7 @@ import { cn } from "@/lib/utils";
 const mainNavItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Inbox", href: "/inbox", icon: MessageSquare },
+  { name: "Approvals", href: "/approvals", icon: CheckSquare },
   { name: "Leads", href: "/investors", icon: Users },
   { name: "Campaigns", href: "/campaigns", icon: Target },
   { name: "Templates", href: "/templates", icon: FileText },
