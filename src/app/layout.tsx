@@ -8,15 +8,13 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "Investor Outreach OS — Smart Fundraising Campaign Manager",
-  description:
-    "Upload your pitch deck, import investors, create personalized outreach campaigns, and manage follow-ups from your own mailbox.",
+  title: "Doodle — Powered by NexaWorks",
+  description: "The ultimate B2B sales and outreach operating system.",
   keywords: [
-    "investor outreach",
-    "fundraising",
-    "startup",
-    "CRM",
-    "email campaigns",
+    "sales outreach",
+    "b2b",
+    "email automation",
+    "crm",
   ],
 };
 

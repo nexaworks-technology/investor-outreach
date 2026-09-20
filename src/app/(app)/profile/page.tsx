@@ -75,7 +75,7 @@ export default async function ProfilePage() {
               <CardTitle>Authentication</CardTitle>
             </div>
             <CardDescription>
-              Manage how you sign in to NexaWorks Outbound.
+              Manage how you sign in to Doodle.
             </CardDescription>
           </CardHeader>
           <CardContent>

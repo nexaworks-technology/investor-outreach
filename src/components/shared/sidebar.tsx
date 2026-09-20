@@ -81,13 +81,18 @@ export function Sidebar() {
     >
       <div className="flex h-16 items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-bold shadow-lg">
-            IO
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl overflow-hidden shadow-lg border border-border bg-background">
+            <img src="/logo.jpg" alt="Doodle Logo" className="h-full w-full object-cover" />
           </div>
           {!isCollapsed && (
-            <span className="truncate font-semibold tracking-tight text-foreground transition-opacity duration-300">
-              Investor Outreach
-            </span>
+            <div className="flex flex-col">
+              <span className="truncate font-semibold tracking-tight text-foreground leading-none mb-0.5">
+                Doodle
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground leading-none">
+                by NexaWorks
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -183,7 +188,7 @@ export function Sidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-3 overflow-hidden cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors flex-1 mr-2 outline-none border-none bg-transparent text-left">
               <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold ring-2 ring-border shrink-0 shadow-sm transition-transform hover:scale-105">
-                IO
+                ME
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col overflow-hidden">
