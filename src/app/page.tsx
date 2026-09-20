@@ -133,63 +133,25 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing */}
+        {/* Pricing / Early Access */}
         <section id="pricing" className="py-24 border-t border-zinc-900 bg-zinc-950">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, transparent pricing</h2>
-              <p className="text-zinc-400">Start for free. Scale when you need to.</p>
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-8 font-medium">
+              <Sparkles className="h-4 w-4" />
+              <span>Early Access Program</span>
             </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              
-              <div className="p-8 rounded-3xl bg-black border border-zinc-800">
-                <h3 className="text-xl font-semibold mb-2">Hobby</h3>
-                <p className="text-zinc-400 text-sm mb-6">Perfect for solo founders.</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">$0</span>
-                  <span className="text-zinc-500">/month</span>
-                </div>
-                <ul className="space-y-4 mb-8 text-sm text-zinc-300">
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> 100 Emails per month</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> 1 Mailbox Connection</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Basic AI Templates</li>
-                </ul>
-                <Button className="w-full bg-zinc-800 hover:bg-zinc-700">Get Started</Button>
-              </div>
-
-              <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-900/20 to-black border border-indigo-500/30 relative">
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-indigo-500 text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</div>
-                <h3 className="text-xl font-semibold mb-2">Pro</h3>
-                <p className="text-zinc-400 text-sm mb-6">For scaling startups.</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">$49</span>
-                  <span className="text-zinc-500">/month</span>
-                </div>
-                <ul className="space-y-4 mb-8 text-sm text-zinc-300">
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> 10,000 Emails per month</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Unlimited Mailboxes</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Omni-Provider AI Load Balancer</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Smart QStash Pacing</li>
-                </ul>
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700">Start 14-day Trial</Button>
-              </div>
-
-              <div className="p-8 rounded-3xl bg-black border border-zinc-800 lg:col-span-1 md:col-span-2">
-                <h3 className="text-xl font-semibold mb-2">Enterprise</h3>
-                <p className="text-zinc-400 text-sm mb-6">Custom limits and dedicated support.</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">Custom</span>
-                </div>
-                <ul className="space-y-4 mb-8 text-sm text-zinc-300">
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Volume Discounts</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Dedicated Account Manager</li>
-                  <li className="flex items-center gap-3"><Check className="h-4 w-4 text-indigo-400"/> Custom Integrations</li>
-                </ul>
-                <Button className="w-full bg-zinc-800 hover:bg-zinc-700">Contact Sales</Button>
-              </div>
-
-            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">100% Free for Early Users</h2>
+            <p className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              We are currently in private beta. Join today and get complete, unrestricted access to the entire Doodle platform, Omni-Provider AI, and unlimited QStash pacing for zero cost.
+            </p>
+            
+            <Link href="/signup">
+              <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-10 h-16 text-lg font-semibold shadow-lg shadow-indigo-500/25 group">
+                Claim your free account
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
         </section>
       </main>
