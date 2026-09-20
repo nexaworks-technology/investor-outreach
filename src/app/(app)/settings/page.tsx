@@ -9,6 +9,7 @@ import { Building, Mail, Sliders, Cpu, Shield, Save, CheckCircle2, Plus } from "
 import { getMailboxes, disconnectMailbox, getGoogleAuthUrl } from "@/actions/mailbox";
 import { SmtpConnectDialog } from "@/components/mailboxes/smtp-connect-dialog";
 import { AISettings } from "@/components/settings/ai-settings";
+import { SendingSettings } from "@/components/settings/sending-settings";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -69,54 +70,8 @@ export default function SettingsPage() {
         </TabsList>
 
         <div className="mt-8 bg-card border rounded-xl p-6">
-          <TabsContent value="sending" className="m-0 space-y-6">
-            <div className="border-b pb-4">
-              <h3 className="text-lg font-medium">Sending Limits</h3>
-              <p className="text-sm text-muted-foreground">Configure how many emails you send per day to protect your domain reputation.</p>
-            </div>
-            
-            <div className="space-y-4 max-w-md">
-              <div className="space-y-2">
-                <Label>Max Emails per Day (per mailbox)</Label>
-                <Input type="number" defaultValue={50} />
-              </div>
-              <div className="space-y-2">
-                <Label>Minimum Delay Between Emails (minutes)</Label>
-                <Input type="number" defaultValue={5} />
-              </div>
-            </div>
-
-            <div className="border-b pb-4 pt-6">
-              <h3 className="text-lg font-medium">Sending Schedule</h3>
-              <p className="text-sm text-muted-foreground">When should emails be sent out.</p>
-            </div>
-
-            <div className="space-y-6 max-w-md">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Send on Weekends</Label>
-                  <p className="text-sm text-muted-foreground">Allow campaigns to run on Saturday and Sunday.</p>
-                </div>
-                <Switch />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Start Time</Label>
-                  <Input type="time" defaultValue="09:00" />
-                </div>
-                <div className="space-y-2">
-                  <Label>End Time</Label>
-                  <Input type="time" defaultValue="17:00" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-6">
-              <Button className="gap-2">
-                <Save className="h-4 w-4" /> Save Settings
-              </Button>
-            </div>
+          <TabsContent value="sending" className="m-0">
+            <SendingSettings />
           </TabsContent>
 
           <TabsContent value="company">

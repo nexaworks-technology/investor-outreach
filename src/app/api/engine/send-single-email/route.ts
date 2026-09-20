@@ -69,7 +69,10 @@ export async function POST(req: Request) {
         return `href="${protocol}://${host}/api/track/click?url=${encodedUrl}&id=${email.id}"`;
       });
       
-      const finalBody = trackedBody + trackingPixel;
+      const unsubscribeUrl = `${protocol}://${host}/api/track/unsubscribe?emailId=${email.id}&investorId=${email.investorId || ''}`;
+      const unsubscribeHtml = `<br><br><p style="font-size: 11px; color: #666; font-family: sans-serif;">If you no longer wish to receive these emails, <a href="${unsubscribeUrl}">unsubscribe here</a>.</p>`;
+
+      const finalBody = trackedBody + unsubscribeHtml + trackingPixel;
 
       const provider = email.mailbox.provider === 'smtp' ? smtpProvider : gmailProvider;
       const result = await provider.sendEmail(credentials, {

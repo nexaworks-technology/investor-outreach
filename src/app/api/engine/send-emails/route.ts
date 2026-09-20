@@ -13,22 +13,64 @@ export async function POST(req: Request) {
 
     console.log("[Sender Dispatcher] Looking for QUEUED emails to send...");
     
-    // We can dispatch more at once now since we're just hitting QStash
-    const queuedEmails = await db.emailMessage.findMany({
+    // Fetch up to 500 queued emails
+    const queuedEmailsRaw = await db.emailMessage.findMany({
       where: { status: "QUEUED" },
-      select: { id: true },
-      take: 200 
+      select: { id: true, workspaceId: true },
+      take: 500,
+      orderBy: { createdAt: 'asc' }
     });
 
-    console.log(`[Sender Dispatcher] Found ${queuedEmails.length} queued emails.`);
+    console.log(`[Sender Dispatcher] Found ${queuedEmailsRaw.length} queued emails globally.`);
 
-    if (queuedEmails.length === 0) {
+    if (queuedEmailsRaw.length === 0) {
       return NextResponse.json({ success: true, dispatchedCount: 0 });
+    }
+
+    // Group by workspace
+    const byWorkspace = queuedEmailsRaw.reduce((acc, email) => {
+      if (!acc[email.workspaceId]) acc[email.workspaceId] = [];
+      acc[email.workspaceId].push(email.id);
+      return acc;
+    }, {} as Record<string, string[]>);
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const approvedEmailIds: string[] = [];
+
+    // Filter by daily sending limits
+    for (const [workspaceId, emailIds] of Object.entries(byWorkspace)) {
+      const settings = await db.workspaceSettings.findUnique({
+        where: { workspaceId },
+        select: { dailySendLimit: true }
+      });
+      
+      const dailyLimit = settings?.dailySendLimit ?? 50;
+
+      const sentTodayCount = await db.emailMessage.count({
+        where: {
+          workspaceId,
+          status: 'SENT',
+          sentAt: { gte: startOfDay }
+        }
+      });
+
+      const allowedRemaining = Math.max(0, dailyLimit - sentTodayCount);
+      console.log(`[Sender Dispatcher] Workspace ${workspaceId}: limit ${dailyLimit}, sent today ${sentTodayCount}. Allowed remaining: ${allowedRemaining}`);
+
+      const idsToApprove = emailIds.slice(0, allowedRemaining);
+      approvedEmailIds.push(...idsToApprove);
+    }
+
+    if (approvedEmailIds.length === 0) {
+      console.log(`[Sender Dispatcher] All workspaces have hit their daily limits. Skipping dispatch.`);
+      return NextResponse.json({ success: true, dispatchedCount: 0, message: "Hit limits" });
     }
 
     // Mark them as SENDING so they don't get picked up by the next cron run
     await db.emailMessage.updateMany({
-      where: { id: { in: queuedEmails.map(e => e.id) } },
+      where: { id: { in: approvedEmailIds } },
       data: { status: "SENDING" }
     });
 
@@ -41,16 +83,16 @@ export async function POST(req: Request) {
       token: process.env.QSTASH_TOKEN!,
     });
 
-    console.log(`[Sender Dispatcher] Dispatching to ${workerUrl}`);
+    console.log(`[Sender Dispatcher] Dispatching ${approvedEmailIds.length} emails to ${workerUrl}`);
 
     let dispatchedCount = 0;
 
-    for (const email of queuedEmails) {
+    for (const emailId of approvedEmailIds) {
       try {
         await qstashClient.publishJSON({
           url: workerUrl,
           body: {
-            emailMessageId: email.id,
+            emailMessageId: emailId,
           },
           headers: {
             Authorization: `Bearer ${process.env.CRON_SECRET}`
@@ -58,10 +100,10 @@ export async function POST(req: Request) {
         });
         dispatchedCount++;
       } catch (error) {
-        console.error(`[Sender Dispatcher] Failed to publish ${email.id} to QStash:`, error);
+        console.error(`[Sender Dispatcher] Failed to publish ${emailId} to QStash:`, error);
         // Revert to QUEUED if QStash fails
         await db.emailMessage.update({
-          where: { id: email.id },
+          where: { id: emailId },
           data: { status: "QUEUED" }
         });
       }
