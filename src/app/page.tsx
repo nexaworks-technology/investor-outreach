@@ -299,12 +299,14 @@ export default function LandingPage() {
         {/* Bottom CTA */}
         <section className="pb-24 pt-12 max-w-6xl mx-auto px-6 relative">
           <div className="rounded-3xl bg-gradient-to-b from-indigo-50 to-indigo-100/50 border border-indigo-100 p-12 md:p-20 text-center relative overflow-hidden shadow-sm">
-            <div className="absolute inset-x-0 bottom-0 opacity-40 mix-blend-multiply">
-               {/* Decorative mountains SVG placeholder */}
-               <svg viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 300L0 200L150 150L250 220L450 50L650 180L800 120L1000 250L1200 100L1200 300Z" fill="#a5b4fc"/>
-                  <path d="M0 300L0 250L200 180L350 260L550 100L750 200L900 150L1100 280L1200 180L1200 300Z" fill="#818cf8"/>
-               </svg>
+            <div className="absolute inset-x-0 bottom-0 opacity-40 mix-blend-multiply flex justify-center w-full h-[250px] overflow-hidden rounded-b-3xl">
+               <Image 
+                  src="/mountains.jpg" 
+                  alt="Mountains Background" 
+                  width={1200} 
+                  height={300} 
+                  className="w-full h-full object-cover object-top" 
+               />
             </div>
             
             <div className="relative z-10">
