@@ -208,7 +208,7 @@ const GlowText: React.FC<{
    MAIN VIDEO
    ═══════════════════════════════════════════════════════ */
 
-export const MainVideo: React.FC = () => {
+export const MainVideoShort: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
