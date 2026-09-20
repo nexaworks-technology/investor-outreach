@@ -305,7 +305,7 @@ export default function LandingPage() {
                   alt="Mountains Background" 
                   width={1200} 
                   height={800} 
-                  className="w-full h-full object-cover object-bottom" 
+                  className="w-full h-full object-cover object-bottom scale-125 translate-y-24" 
                />
             </div>
             
