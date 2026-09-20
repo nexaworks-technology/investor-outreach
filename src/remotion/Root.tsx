@@ -1,6 +1,6 @@
 import { Composition } from "remotion";
 import { MainVideo } from "./MainVideo";
-import "@/app/globals.css";
+import "./tailwind.css";
 
 export const RemotionRoot: React.FC = () => {
   return (

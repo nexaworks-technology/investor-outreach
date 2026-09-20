@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "video:preview": "remotion preview src/remotion/index.ts",
-    "video:render": "remotion render src/remotion/index.ts MainVideo out/video.mp4",
+    "video:preview": "npx -y @tailwindcss/cli -i src/remotion/style.css -o src/remotion/tailwind.css && remotion preview src/remotion/index.ts",
+    "video:render": "npx -y @tailwindcss/cli -i src/remotion/style.css -o src/remotion/tailwind.css && remotion render src/remotion/index.ts MainVideo out/video.mp4",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -62,7 +62,6 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@remotion/tailwind": "^4.0.526",
     "@tailwindcss/postcss": "^4",
     "@trigger.dev/build": "^4.5.16",
     "@types/mailparser": "^3.4.6",
@@ -74,10 +73,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "css-loader": "^7.1.5",
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
+    "postcss-loader": "^8.2.1",
     "prisma": "^6.19.3",
+    "style-loader": "^4.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.11"
