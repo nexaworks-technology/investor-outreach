@@ -54,11 +54,28 @@ export async function POST(req: Request) {
         smtpPassword: email.mailbox.smtpPassword ? decrypt(email.mailbox.smtpPassword) : undefined,
       };
       
+      const host = req.headers.get('host') || process.env.NEXT_PUBLIC_APP_URL?.replace('https://', '').replace('http://', '') || 'doodle.nexaworks.tech';
+      const protocol = host.includes('localhost') ? 'http' : 'https';
+      
+      // Inject Open Tracking Pixel
+      const trackingUrl = `${protocol}://${host}/api/track/open?id=${email.id}`;
+      const trackingPixel = `<img src="${trackingUrl}" alt="" width="1" height="1" style="display:none;" />`;
+      
+      // Inject Click Tracking for Links
+      let trackedBody = email.body || "";
+      trackedBody = trackedBody.replace(/href=["'](.*?)["']/g, (match, url) => {
+        if (url.startsWith('mailto:') || url.startsWith('tel:') || url.startsWith('#')) return match;
+        const encodedUrl = encodeURIComponent(url);
+        return `href="${protocol}://${host}/api/track/click?url=${encodedUrl}&id=${email.id}"`;
+      });
+      
+      const finalBody = trackedBody + trackingPixel;
+
       const provider = email.mailbox.provider === 'smtp' ? smtpProvider : gmailProvider;
       const result = await provider.sendEmail(credentials, {
         to: email.toEmail,
         subject: email.subject || "No Subject",
-        body: email.body || "",
+        body: finalBody,
         inReplyTo: email.inReplyToHeader ?? undefined,
         trackingId: email.id,
         attachments: email.attachments,
