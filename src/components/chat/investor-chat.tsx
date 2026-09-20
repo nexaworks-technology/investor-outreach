@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { format, formatDistanceToNow, isToday, isYesterday, isSameDay } from "date-fns";
-import { Send, Search, Check, Clock, X, MessageSquare, ArrowLeft, Mail, RefreshCw } from "lucide-react";
+import { Send, Search, Check, Clock, X, MessageSquare, ArrowLeft, Mail, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -75,6 +75,9 @@ export default function InvestorChat({
 
   const activeInvestor = investors.find((inv) => inv.id === activeId);
   const activeThread = activeId ? threads[activeId] || [] : [];
+  
+  const latestInboundWithDraft = [...activeThread].reverse().find(m => m.direction === 'INBOUND' && m.suggestedResponse);
+  const aiDraft = latestInboundWithDraft?.suggestedResponse;
 
   // Group messages by day
   const groupedMessages: Record<string, Message[]> = {};
@@ -439,6 +442,19 @@ export default function InvestorChat({
             {/* Compose Area */}
             <div className="p-4 bg-background border-t">
               <div className="max-w-4xl mx-auto flex flex-col gap-2">
+                {aiDraft && (
+                  <div className="mb-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs bg-indigo-50/50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-300 dark:border-indigo-800"
+                      onClick={() => setBody(aiDraft)}
+                    >
+                      <Sparkles className="w-3 h-3 mr-2" />
+                      Insert AI Suggested Reply
+                    </Button>
+                  </div>
+                )}
                 <Input
                   placeholder="Subject..."
                   value={subject}

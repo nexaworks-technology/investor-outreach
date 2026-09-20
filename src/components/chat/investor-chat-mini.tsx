@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
-import { Send, Check, Clock, X, MessageSquare } from "lucide-react";
+import { Send, Check, Clock, X, MessageSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +44,9 @@ export default function InvestorChatMini({
   const [isSending, setIsSending] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const latestInboundWithDraft = [...messages].reverse().find(m => m.direction === 'INBOUND' && m.suggestedResponse);
+  const aiDraft = latestInboundWithDraft?.suggestedResponse;
 
   // Group messages by day
   const groupedMessages: Record<string, Message[]> = {};
@@ -205,6 +208,19 @@ export default function InvestorChatMini({
       {/* Compose Area */}
       <div className="p-4 bg-background border-t">
         <div className="flex flex-col gap-2">
+          {aiDraft && (
+            <div className="mb-1">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs bg-indigo-50/50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-300 dark:border-indigo-800 w-full justify-start"
+                onClick={() => setBody(aiDraft)}
+              >
+                <Sparkles className="w-3 h-3 mr-2 shrink-0" />
+                <span className="truncate">Insert AI Suggested Reply</span>
+              </Button>
+            </div>
+          )}
           <Input
             placeholder="Subject..."
             value={subject}
