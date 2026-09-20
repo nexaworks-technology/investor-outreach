@@ -23,9 +23,8 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
             <Link href="#features" className="hover:text-zinc-900 transition-colors">Product</Link>
             <Link href="#use-cases" className="hover:text-zinc-900 transition-colors">Use Cases</Link>
-            <Link href="#testimonials" className="hover:text-zinc-900 transition-colors">Resources</Link>
-            <Link href="#early-access" className="hover:text-zinc-900 transition-colors">Pricing</Link>
-            <Link href="#early-access" className="hover:text-zinc-900 transition-colors">Changelog</Link>
+            <Link href="#testimonials" className="hover:text-zinc-900 transition-colors">Testimonials</Link>
+            <Link href="#early-access" className="hover:text-zinc-900 transition-colors font-semibold text-indigo-600">Free Access</Link>
           </nav>
           <div className="flex items-center gap-6">
             <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
@@ -354,10 +353,10 @@ export default function LandingPage() {
              </div>
              <Link href="#features" className="hover:text-zinc-900">Product</Link>
              <Link href="#use-cases" className="hover:text-zinc-900">Use Cases</Link>
-             <Link href="#testimonials" className="hover:text-zinc-900">Resources</Link>
-             <Link href="#early-access" className="hover:text-zinc-900">Changelog</Link>
-             <Link href="#early-access" className="hover:text-zinc-900">Privacy</Link>
-             <Link href="#early-access" className="hover:text-zinc-900">Terms</Link>
+             <Link href="#testimonials" className="hover:text-zinc-900">Testimonials</Link>
+             <Link href="#early-access" className="hover:text-zinc-900">Free Access</Link>
+             <Link href="#" className="hover:text-zinc-900">Privacy</Link>
+             <Link href="#" className="hover:text-zinc-900">Terms</Link>
           </div>
           <div className="flex items-center gap-4 text-sm text-zinc-500 font-medium">
              <span>Built with ❤️ by a small team, for big opportunities.</span>
