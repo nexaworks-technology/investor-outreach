@@ -292,20 +292,56 @@ export const MainVideoShort: React.FC = () => {
                       <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
                       <div className="w-3 h-3 rounded-full bg-green-500/50" />
                     </div>
-                    <div className="flex gap-6 h-full">
-                      <div className="w-48 space-y-4">
-                        <div className="h-4 w-full bg-white/10 rounded" />
-                        <div className="h-4 w-3/4 bg-white/5 rounded" />
-                        <div className="h-4 w-5/6 bg-white/5 rounded" />
-                        <div className="h-4 w-full bg-white/5 rounded" />
+                    <div className="flex gap-6 h-full text-sm">
+                      {/* Sidebar */}
+                      <div className="w-48 space-y-2">
+                        <div className="px-3 py-2 bg-indigo-500/20 text-indigo-300 rounded-lg font-medium flex items-center gap-2"><Target className="w-4 h-4" /> Campaigns</div>
+                        <div className="px-3 py-2 text-zinc-400 hover:text-zinc-200 font-medium flex items-center gap-2"><Users className="w-4 h-4" /> Leads</div>
+                        <div className="px-3 py-2 text-zinc-400 hover:text-zinc-200 font-medium flex items-center gap-2"><Mail className="w-4 h-4" /> Inbox</div>
+                        <div className="px-3 py-2 text-zinc-400 hover:text-zinc-200 font-medium flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Analytics</div>
                       </div>
+                      
+                      {/* Main Content */}
                       <div className="flex-1 space-y-6">
+                        {/* Stats Row */}
                         <div className="flex gap-4">
-                          <div className="h-24 flex-1 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 rounded-xl" />
-                          <div className="h-24 flex-1 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 rounded-xl" />
-                          <div className="h-24 flex-1 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 rounded-xl" />
+                          <div className="h-24 flex-1 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-white/10 rounded-xl p-4 flex flex-col justify-center">
+                            <span className="text-zinc-400 text-xs font-semibold mb-1">Emails Sent</span>
+                            <span className="text-2xl font-bold text-white">1,240</span>
+                          </div>
+                          <div className="h-24 flex-1 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-white/10 rounded-xl p-4 flex flex-col justify-center">
+                            <span className="text-zinc-400 text-xs font-semibold mb-1">Open Rate</span>
+                            <span className="text-2xl font-bold text-white">48.2%</span>
+                          </div>
+                          <div className="h-24 flex-1 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-white/10 rounded-xl p-4 flex flex-col justify-center">
+                            <span className="text-zinc-400 text-xs font-semibold mb-1">Replies</span>
+                            <span className="text-2xl font-bold text-emerald-400">112</span>
+                          </div>
                         </div>
-                        <div className="h-48 w-full bg-white/5 rounded-xl border border-white/5" />
+                        
+                        {/* Data Table */}
+                        <div className="h-48 w-full bg-white/5 rounded-xl border border-white/5 p-4">
+                          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 mb-4 pb-2 border-b border-white/5">
+                            <span className="w-1/3">LEAD NAME</span>
+                            <span className="w-1/3">COMPANY</span>
+                            <span className="w-1/3">STATUS</span>
+                          </div>
+                          <div className="space-y-3">
+                            {[
+                              { name: "Sarah Jenkins", company: "Acme Corp", status: "Replied", color: "text-emerald-400", bg: "bg-emerald-400/10" },
+                              { name: "Mike Chen", company: "TechFlow", status: "Sent", color: "text-zinc-300", bg: "bg-white/10" },
+                              { name: "Alex Rivera", company: "Global AI", status: "Opened", color: "text-purple-400", bg: "bg-purple-400/10" },
+                            ].map((row, i) => (
+                              <div key={i} className="flex items-center justify-between text-sm">
+                                <span className="w-1/3 text-zinc-200">{row.name}</span>
+                                <span className="w-1/3 text-zinc-400">{row.company}</span>
+                                <span className="w-1/3">
+                                  <span className={`px-2 py-1 rounded text-xs font-medium ${row.color} ${row.bg}`}>{row.status}</span>
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </GlassCard>
