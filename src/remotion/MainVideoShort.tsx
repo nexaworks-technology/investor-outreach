@@ -217,9 +217,9 @@ export const MainVideoShort: React.FC = () => {
     <AbsoluteFill className="bg-zinc-950 font-sans overflow-hidden text-white">
 
       {/* ═══ SCENE 1: HOOK (0–136) ═══ */}
-      <Sequence from={0} durationInFrames={136}>
-        <Audio src={staticFile("audio2/s01.m4a")} />
-        <Scene frame={frame} fps={fps} from={0} dur={136}>
+      <Sequence from={0} durationInFrames={159}>
+        <Audio src={staticFile("audio2/s01.mp3")} />
+        <Scene frame={frame} fps={fps} from={0} dur={159}>
           <DotGrid frame={frame} color="rgba(239,68,68,0.08)" speed={0.5} />
           <GradientOrb x={20} y={30} size={400} color1="rgba(239,68,68,0.2)" color2="transparent" frame={frame} />
           <GradientOrb x={80} y={70} size={500} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={20} />
@@ -269,15 +269,15 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 2: INTRO (136–232) ═══ */}
-      <Sequence from={136} durationInFrames={96}>
-        <Audio src={staticFile("audio2/s02.m4a")} />
-        <Scene frame={frame} fps={fps} from={136} dur={96}>
+      <Sequence from={159} durationInFrames={114}>
+        <Audio src={staticFile("audio2/s02.mp3")} />
+        <Scene frame={frame} fps={fps} from={159} dur={114}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
           <GradientOrb x={50} y={50} size={600} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           
           <div className="absolute inset-0 flex items-center justify-center">
             {(() => {
-              const p = spring({ frame: frame - 136, fps, config: { damping: 14 } });
+              const p = spring({ frame: frame - 159, fps, config: { damping: 14 } });
               return (
                 <div style={{ transform: `scale(${interpolate(p, [0, 1], [0.8, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }} className="flex flex-col items-center">
                   <div className="flex items-center gap-4 mb-8">
@@ -353,15 +353,15 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 3: DEMO (232–395) ═══ */}
-      <Sequence from={232} durationInFrames={163}>
-        <Audio src={staticFile("audio2/s03.m4a")} />
-        <Scene frame={frame} fps={fps} from={232} dur={163}>
+      <Sequence from={273} durationInFrames={198}>
+        <Audio src={staticFile("audio2/s03.mp3")} />
+        <Scene frame={frame} fps={fps} from={273} dur={198}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.4} />
           
           <div className="absolute inset-0 flex items-center justify-center gap-12">
             {/* Step 1: Import */}
             {(() => {
-              const p = spring({ frame: frame - 240, fps, config: { damping: 12 } });
+              const p = spring({ frame: frame - 281, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
                   <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
@@ -373,11 +373,11 @@ export const MainVideoShort: React.FC = () => {
               );
             })()}
 
-            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 270, fps }) }} />
+            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 311, fps }) }} />
 
             {/* Step 2: AI Personalize */}
             {(() => {
-              const p = spring({ frame: frame - 280, fps, config: { damping: 12 } });
+              const p = spring({ frame: frame - 321, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
                   <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
@@ -389,11 +389,11 @@ export const MainVideoShort: React.FC = () => {
               );
             })()}
 
-            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 320, fps }) }} />
+            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 361, fps }) }} />
 
             {/* Step 3: Launch */}
             {(() => {
-              const p = spring({ frame: frame - 330, fps, config: { damping: 12 } });
+              const p = spring({ frame: frame - 371, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
                   <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
@@ -409,16 +409,16 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 4: REPLY (395–539) ═══ */}
-      <Sequence from={395} durationInFrames={144}>
-        <Audio src={staticFile("audio2/s04.m4a")} />
-        <Scene frame={frame} fps={fps} from={395} dur={144}>
+      <Sequence from={471} durationInFrames={146}>
+        <Audio src={staticFile("audio2/s04.mp3")} />
+        <Scene frame={frame} fps={fps} from={471} dur={146}>
           <GradientOrb x={30} y={30} size={600} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           <GradientOrb x={70} y={70} size={500} color1="rgba(236,72,153,0.15)" color2="transparent" frame={frame} delay={50} />
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {/* Incoming Message */}
             {(() => {
-              const p = spring({ frame: frame - 400, fps, config: { damping: 14 } });
+              const p = spring({ frame: frame - 476, fps, config: { damping: 14 } });
               return (
                 <div className="w-[600px] mb-6" style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)` }}>
                   <GlassCard className="p-6 border-l-4 border-l-indigo-500">
@@ -435,12 +435,12 @@ export const MainVideoShort: React.FC = () => {
 
             {/* AI Reply Button & Draft */}
             {(() => {
-              const pBtn = spring({ frame: frame - 440, fps, config: { damping: 12 } });
+              const pBtn = spring({ frame: frame - 516, fps, config: { damping: 12 } });
               // Simulate click at frame 470
-              const click = spring({ frame: frame - 470, fps, config: { damping: 10, stiffness: 200 } });
+              const click = spring({ frame: frame - 546, fps, config: { damping: 10, stiffness: 200 } });
               const scale = interpolate(click, [0, 0.5, 1], [1, 0.95, 1]);
               
-              const pDraft = spring({ frame: frame - 480, fps, config: { damping: 14 } });
+              const pDraft = spring({ frame: frame - 556, fps, config: { damping: 14 } });
 
               return (
                 <div className="w-[600px] flex flex-col items-end" style={{ opacity: interpolate(pBtn, [0, 1], [0, 1]) }}>
@@ -468,18 +468,18 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 5: PAYOFF (539–648) ═══ */}
-      <Sequence from={539} durationInFrames={109}>
-        <Audio src={staticFile("audio2/s05.m4a")} />
-        <Scene frame={frame} fps={fps} from={539} dur={109}>
+      <Sequence from={617} durationInFrames={124}>
+        <Audio src={staticFile("audio2/s05.mp3")} />
+        <Scene frame={frame} fps={fps} from={617} dur={124}>
           <DotGrid frame={frame} color="rgba(52,211,153,0.08)" speed={0.5} />
           <GradientOrb x={50} y={50} size={800} color1="rgba(52,211,153,0.15)" color2="transparent" frame={frame} />
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="flex gap-4 mb-6">
               {[
-                { text: "Leads.", delay: 550 },
-                { text: "Outreach.", delay: 565 },
-                { text: "Replies.", delay: 580 },
+                { text: "Leads.", delay: 628 },
+                { text: "Outreach.", delay: 643 },
+                { text: "Replies.", delay: 658 },
               ].map((item, i) => {
                 const p = spring({ frame: frame - item.delay, fps, config: { damping: 12 } });
                 return (
@@ -498,7 +498,7 @@ export const MainVideoShort: React.FC = () => {
             </div>
             
             {(() => {
-              const p = spring({ frame: frame - 600, fps, config: { damping: 12 } });
+              const p = spring({ frame: frame - 678, fps, config: { damping: 12 } });
               return (
                 <div 
                   className="bg-emerald-500 px-8 py-2 rounded-2xl"
@@ -517,16 +517,16 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 6: THE CATCH (648–784) ═══ */}
-      <Sequence from={648} durationInFrames={136}>
-        <Audio src={staticFile("audio2/s06.m4a")} />
-        <Scene frame={frame} fps={fps} from={648} dur={136}>
+      <Sequence from={741} durationInFrames={167}>
+        <Audio src={staticFile("audio2/s06.mp3")} />
+        <Scene frame={frame} fps={fps} from={741} dur={167}>
           <GradientOrb x={20} y={80} size={500} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           <GradientOrb x={80} y={20} size={500} color1="rgba(168,85,247,0.2)" color2="transparent" frame={frame} />
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <GlowText
               text="100% FREE FOR EARLY BETA USERS"
-              frame={frame} fps={fps} startFrame={655}
+              frame={frame} fps={fps} startFrame={748}
               className="text-[5.5rem] font-black text-white text-center max-w-5xl leading-tight tracking-tight"
               highlightWords={["FREE", "EARLY", "BETA"]}
               glowColor="rgba(168,85,247,0.5)"
@@ -536,16 +536,16 @@ export const MainVideoShort: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 7: CTA (784–884) ═══ */}
-      <Sequence from={784} durationInFrames={100}>
-        <Audio src={staticFile("audio2/s07.m4a")} />
-        <Scene frame={frame} fps={fps} from={784} dur={100}>
+      <Sequence from={908} durationInFrames={109}>
+        <Audio src={staticFile("audio2/s07.mp3")} />
+        <Scene frame={frame} fps={fps} from={908} dur={109}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {(() => {
-              const pLogo = spring({ frame: frame - 790, fps, config: { damping: 12 } });
-              const pBtn = spring({ frame: frame - 810, fps, config: { damping: 12 } });
-              const pTag = spring({ frame: frame - 830, fps, config: { damping: 12 } });
+              const pLogo = spring({ frame: frame - 914, fps, config: { damping: 12 } });
+              const pBtn = spring({ frame: frame - 934, fps, config: { damping: 12 } });
+              const pTag = spring({ frame: frame - 954, fps, config: { damping: 12 } });
               
               return (
                 <>
