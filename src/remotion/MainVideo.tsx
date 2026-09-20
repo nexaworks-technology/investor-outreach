@@ -1,4 +1,4 @@
-import {
+import { Img,
   AbsoluteFill,
   Audio,
   interpolate,
@@ -215,9 +215,9 @@ export const MainVideo: React.FC = () => {
     <AbsoluteFill className="bg-zinc-950 font-sans overflow-hidden">
 
       {/* ═══ SCENE 0: HOOK — Stats that stop the scroll ═══ (0–165) */}
-      <Sequence from={0} durationInFrames={165}>
+      <Sequence from={52} durationInFrames={165}>
         <Audio src={staticFile("audio/s00.m4a")} />
-        <Scene frame={frame} fps={fps} from={0} dur={165}>
+        <Scene frame={frame} fps={fps} from={52} dur={165}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.6} />
           <GradientOrb x={50} y={50} size={700} color1="rgba(99,102,241,0.25)" color2="rgba(168,85,247,0.15)" frame={frame} />
           <GradientOrb x={20} y={70} size={400} color1="rgba(236,72,153,0.15)" color2="transparent" frame={frame} delay={40} />
@@ -278,9 +278,9 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 1: "Your outbound is broken." ═══ (165–217) */}
-      <Sequence from={165} durationInFrames={52}>
+      <Sequence from={0} durationInFrames={52}>
         <Audio src={staticFile("audio/s01.m4a")} />
-        <Scene frame={frame} fps={fps} from={165} dur={52}>
+        <Scene frame={frame} fps={fps} from={0} dur={52}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
           <GradientOrb x={20} y={30} size={400} color1="rgba(99,102,241,0.3)" color2="transparent" frame={frame} />
           <GradientOrb x={70} y={60} size={300} color1="rgba(168,85,247,0.25)" color2="transparent" frame={frame} delay={50} />
@@ -290,7 +290,7 @@ export const MainVideo: React.FC = () => {
               text="Your outbound is broken."
               frame={frame}
               fps={fps}
-              startFrame={170}
+              startFrame={5}
               className="text-[6.5rem] font-black text-white tracking-tight leading-none"
               highlightWords={["broken."]}
               glowColor="rgba(239,68,68,0.5)"
@@ -413,10 +413,10 @@ export const MainVideo: React.FC = () => {
                 <div style={{ transform: `scale(${interpolate(p, [0, 1], [0, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
                   <div className="flex items-center gap-6">
                     <div
-                      className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6"
-                      style={{ boxShadow: "0 0 60px rgba(99,102,241,0.4), 0 0 120px rgba(99,102,241,0.2)" }}
+                      className="rounded-3xl overflow-hidden bg-black"
+                      style={{ width: 120, height: 120, boxShadow: "0 0 60px rgba(99,102,241,0.4), 0 0 120px rgba(99,102,241,0.2)" }}
                     >
-                      <Sparkles className="w-16 h-16 text-white" />
+                      <Img src={staticFile("logo.jpg")} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-9xl font-black text-white tracking-tight">Doodle</span>
                   </div>
@@ -822,10 +822,10 @@ export const MainVideo: React.FC = () => {
                 <div className="flex flex-col items-center" style={{ transform: `scale(${interpolate(p, [0, 1], [0.5, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
                   <div className="flex items-center gap-5 mb-10">
                     <div
-                      className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-4"
-                      style={{ boxShadow: "0 0 60px rgba(99,102,241,0.4)" }}
+                      className="rounded-2xl overflow-hidden bg-black"
+                      style={{ width: 80, height: 80, boxShadow: "0 0 60px rgba(99,102,241,0.4)" }}
                     >
-                      <Sparkles className="w-12 h-12 text-white" />
+                      <Img src={staticFile("logo.jpg")} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-6xl font-bold text-white tracking-tight">Doodle</span>
                   </div>
