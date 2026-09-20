@@ -60,8 +60,8 @@ function fallbackReplace(context: GenerationContext) {
 export async function generatePersonalizedEmail(
   apiKeys: string[],
   context: GenerationContext,
-  provider: string = "groq",
-  model: string = "openai/gpt-oss-120b"
+  provider: string = "zai",
+  model: string = "glm-4.7-flash"
 ): Promise<{ subject: string; body: string }> {
   if (context.customIcebreaker) {
     console.log("[AI Gen] Using customIcebreaker (0-Token Bypass)");
@@ -74,7 +74,10 @@ export async function generatePersonalizedEmail(
   let keysToUse = apiKeys;
   
   if (!keysToUse || keysToUse.length === 0) {
-    if (process.env.GROQ_API_KEYS) {
+    if (process.env.ZAI_API_KEY) {
+      keysToUse = process.env.ZAI_API_KEY.split(',').map(k => k.trim());
+      provider = "zai";
+    } else if (process.env.GROQ_API_KEYS) {
       keysToUse = process.env.GROQ_API_KEYS.split(',').map(k => k.trim());
       provider = "groq";
     } else if (process.env.GROQ_API_KEY) {
@@ -139,14 +142,17 @@ Return the final subject and body strictly as JSON.`;
       let subject = "";
       let body = "";
 
-      if (provider === "groq") {
+      if (provider === "groq" || provider === "zai") {
+        const baseURL = provider === "zai" ? "https://api.z.ai/api/paas/v4/" : "https://api.groq.com/openai/v1";
+        const defaultModel = provider === "zai" ? "glm-4.7-flash" : "openai/gpt-oss-120b";
+        
         const openai = new OpenAI({
           apiKey,
-          baseURL: "https://api.groq.com/openai/v1"
+          baseURL
         });
 
         const response = await openai.chat.completions.create({
-          model: model || "openai/gpt-oss-120b",
+          model: model || defaultModel,
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt }
@@ -158,7 +164,16 @@ Return the final subject and body strictly as JSON.`;
         const content = response.choices[0]?.message?.content;
         if (!content) throw new Error("Empty response from AI");
         
-        const parsed = JSON.parse(content);
+        let parsed;
+        try {
+          parsed = JSON.parse(content);
+        } catch (e) {
+          // If JSON parse fails, try to extract json block
+          const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+          if (jsonMatch) parsed = JSON.parse(jsonMatch[1]);
+          else throw new Error("Failed to parse JSON response");
+        }
+        
         subject = parsed.subject;
         body = parsed.body;
 
@@ -218,13 +233,16 @@ Return the final subject and body strictly as JSON.`;
 export async function classifyEmailReply(
   apiKeys: string[],
   emailBody: string,
-  provider: string = "groq",
-  model: string = "openai/gpt-oss-120b"
+  provider: string = "zai",
+  model: string = "glm-4.7-flash"
 ): Promise<{ classification: string, suggestedResponse: string }> {
   let keysToUse = apiKeys;
   
   if (!keysToUse || keysToUse.length === 0) {
-    if (process.env.GROQ_API_KEYS) {
+    if (process.env.ZAI_API_KEY) {
+      keysToUse = process.env.ZAI_API_KEY.split(',').map(k => k.trim());
+      provider = "zai";
+    } else if (process.env.GROQ_API_KEYS) {
       keysToUse = process.env.GROQ_API_KEYS.split(',').map(k => k.trim());
       provider = "groq";
     } else if (process.env.GROQ_API_KEY) {
@@ -265,10 +283,13 @@ Output MUST be valid JSON containing exactly two keys: 'classification' (string,
   for (let i = 0; i < keysToUse.length; i++) {
     const apiKey = keysToUse[i];
     try {
-      if (provider === "groq") {
-        const openai = new OpenAI({ apiKey, baseURL: "https://api.groq.com/openai/v1" });
+      if (provider === "groq" || provider === "zai") {
+        const baseURL = provider === "zai" ? "https://api.z.ai/api/paas/v4/" : "https://api.groq.com/openai/v1";
+        const defaultModel = provider === "zai" ? "glm-4.7-flash" : "openai/gpt-oss-120b";
+        
+        const openai = new OpenAI({ apiKey, baseURL });
         const response = await openai.chat.completions.create({
-          model: model || "openai/gpt-oss-120b",
+          model: model || defaultModel,
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt }
@@ -279,7 +300,16 @@ Output MUST be valid JSON containing exactly two keys: 'classification' (string,
 
         const content = response.choices[0]?.message?.content;
         if (!content) throw new Error("Empty response");
-        const parsed = JSON.parse(content);
+        
+        let parsed;
+        try {
+          parsed = JSON.parse(content);
+        } catch (e) {
+          const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+          if (jsonMatch) parsed = JSON.parse(jsonMatch[1]);
+          else throw new Error("Failed to parse JSON response");
+        }
+        
         return { classification: parsed.classification, suggestedResponse: parsed.suggestedResponse || "" };
       } else {
         const ai = new GoogleGenAI({ apiKey });
