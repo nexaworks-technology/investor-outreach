@@ -18,8 +18,34 @@ export default async function DashboardPage() {
     const data = await getDashboardData();
     const { metrics, pipelineCounts, recentActivity, upcomingFollowUps, campaignMetrics } = data;
 
+    if (metrics.totalInvestors === 0 && metrics.totalSent === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-2xl mx-auto p-8 text-center animate-in fade-in zoom-in duration-500">
+          <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+            <Target className="h-10 w-10 text-primary" />
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to Doodle</h1>
+          <p className="text-muted-foreground text-lg mb-8">
+            Your workspace is almost ready. Let's get started by importing your target leads or connecting your email.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <Link href="/investors?action=import">
+              <Button size="lg" className="w-full sm:w-auto">
+                Import Leads
+              </Button>
+            </Link>
+            <Link href="/settings">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                Connect Email
+              </Button>
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     const cards = [
-      { label: 'Total Investors', value: metrics.totalInvestors, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+      { label: 'Total Leads', value: metrics.totalInvestors, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
       { label: 'Emails Sent', value: metrics.totalSent, icon: Send, color: 'text-zinc-500', bg: 'bg-zinc-500/10' },
       { label: 'Open Rate', value: `${metrics.openRate}%`, icon: Eye, color: 'text-sky-500', bg: 'bg-sky-500/10' },
       { label: 'Reply Rate', value: `${metrics.replyRate}%`, icon: MessageSquare, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
@@ -266,21 +292,19 @@ export default async function DashboardPage() {
   } catch (error: any) {
     if (error?.message === 'NEXT_REDIRECT') throw error;
     console.error("Dashboard error:", error);
-    // Fallback/Setup State
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-2xl mx-auto p-8 text-center animate-in fade-in zoom-in duration-500">
         <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
           <Target className="h-10 w-10 text-primary" />
         </div>
-        <div className="text-red-500 mb-4">{error.message || String(error)}</div>
         <h1 className="text-4xl font-bold tracking-tight mb-4">Welcome to Doodle</h1>
         <p className="text-muted-foreground text-lg mb-8">
-          Your workspace is almost ready. Let's get started by importing your target investors or connecting your email.
+          Your workspace is almost ready. Let's get started by importing your target leads or connecting your email.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
           <Link href="/investors?action=import">
             <Button size="lg" className="w-full sm:w-auto">
-              Import Investors
+              Import Leads
             </Button>
           </Link>
           <Link href="/settings">
