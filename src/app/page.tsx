@@ -21,11 +21,11 @@ export default function LandingPage() {
             <span className="font-bold text-2xl tracking-tight">Doodle</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600">
-            <Link href="#" className="hover:text-zinc-900 transition-colors">Product</Link>
-            <Link href="#" className="hover:text-zinc-900 transition-colors">Use Cases</Link>
-            <Link href="#" className="hover:text-zinc-900 transition-colors">Resources</Link>
-            <Link href="#" className="hover:text-zinc-900 transition-colors">Pricing</Link>
-            <Link href="#" className="hover:text-zinc-900 transition-colors">Changelog</Link>
+            <Link href="#features" className="hover:text-zinc-900 transition-colors">Product</Link>
+            <Link href="#use-cases" className="hover:text-zinc-900 transition-colors">Use Cases</Link>
+            <Link href="#testimonials" className="hover:text-zinc-900 transition-colors">Resources</Link>
+            <Link href="#early-access" className="hover:text-zinc-900 transition-colors">Pricing</Link>
+            <Link href="#early-access" className="hover:text-zinc-900 transition-colors">Changelog</Link>
           </nav>
           <div className="flex items-center gap-6">
             <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
@@ -187,7 +187,7 @@ export default function LandingPage() {
         </section>
 
         {/* Outreach Simplified */}
-        <section className="py-24 max-w-7xl mx-auto px-6">
+        <section id="features" className="py-24 max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">Outreach, simplified.</h2>
@@ -219,7 +219,7 @@ export default function LandingPage() {
         </section>
 
         {/* Built for how you work */}
-        <section className="py-24 bg-zinc-50 border-y border-zinc-100">
+        <section id="use-cases" className="py-24 bg-zinc-50 border-y border-zinc-100">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 relative">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Built for how you work</h2>
@@ -260,7 +260,7 @@ export default function LandingPage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-24 max-w-7xl mx-auto px-6">
+        <section id="testimonials" className="py-24 max-w-7xl mx-auto px-6">
           <div className="flex items-end justify-between mb-12">
             <div>
               <h2 className="text-3xl font-bold mb-2 tracking-tight">Trusted by early users.</h2>
@@ -297,7 +297,7 @@ export default function LandingPage() {
         </section>
 
         {/* Bottom CTA */}
-        <section className="pb-24 pt-12 max-w-6xl mx-auto px-6 relative">
+        <section id="early-access" className="pb-24 pt-12 max-w-6xl mx-auto px-6 relative">
           <div className="rounded-3xl bg-gradient-to-b from-indigo-50 to-indigo-100/50 border border-indigo-100 p-12 md:p-20 text-center relative overflow-hidden shadow-sm">
             <div className="absolute inset-x-0 bottom-0 opacity-60 mix-blend-multiply flex justify-center w-full h-full overflow-hidden rounded-b-3xl pointer-events-none">
                <Image 
@@ -352,12 +352,12 @@ export default function LandingPage() {
                </div>
                <span className="font-bold">Doodle</span>
              </div>
-             <Link href="#" className="hover:text-zinc-900">Product</Link>
-             <Link href="#" className="hover:text-zinc-900">Use Cases</Link>
-             <Link href="#" className="hover:text-zinc-900">Resources</Link>
-             <Link href="#" className="hover:text-zinc-900">Changelog</Link>
-             <Link href="#" className="hover:text-zinc-900">Privacy</Link>
-             <Link href="#" className="hover:text-zinc-900">Terms</Link>
+             <Link href="#features" className="hover:text-zinc-900">Product</Link>
+             <Link href="#use-cases" className="hover:text-zinc-900">Use Cases</Link>
+             <Link href="#testimonials" className="hover:text-zinc-900">Resources</Link>
+             <Link href="#early-access" className="hover:text-zinc-900">Changelog</Link>
+             <Link href="#early-access" className="hover:text-zinc-900">Privacy</Link>
+             <Link href="#early-access" className="hover:text-zinc-900">Terms</Link>
           </div>
           <div className="flex items-center gap-4 text-sm text-zinc-500 font-medium">
              <span>Built with ❤️ by a small team, for big opportunities.</span>
