@@ -456,7 +456,7 @@ export const MainVideoShort: React.FC = () => {
                   <div className="w-[500px]" style={{ opacity: interpolate(pDraft, [0, 1], [0, 1]), transform: `translateY(${interpolate(pDraft, [0, 1], [20, 0])}px)` }}>
                     <GradientBorderCard containerClassName="w-full" className="p-6 border-l-4 border-l-purple-500">
                       <p className="text-lg text-zinc-300 leading-relaxed">
-                        Hi John, absolutely. I've attached our deck below. Let me know if you have any questions!<Cursor blink={true} />
+                        Hi John, absolutely. I've attached our deck below. Let me know if you have any questions!<Cursor frame={frame} />
                       </p>
                     </GradientBorderCard>
                   </div>
