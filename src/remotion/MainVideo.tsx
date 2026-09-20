@@ -153,27 +153,20 @@ const ProgressRing: React.FC<{
   );
 };
 
-/** Scene wrapper with premium transitions */
+/** Scene wrapper with clean transitions (no blur to avoid glitching) */
 const Scene: React.FC<{
   frame: number; fps: number; from: number; dur: number;
   bg?: string; children: React.ReactNode;
 }> = ({ frame, fps, from, dur, bg, children }) => {
   const localFrame = frame - from;
-  const inP = spring({ frame: localFrame, fps, config: { damping: 14 } });
-  const outP = spring({ frame: localFrame - (dur - 12), fps, config: { damping: 14 } });
-  const opacity = Math.max(0, interpolate(inP, [0, 1], [0, 1]) - interpolate(outP, [0, 1], [0, 1]));
-  const scale = interpolate(inP, [0, 1], [1.05, 1]);
-  const blur = interpolate(inP, [0, 1], [8, 0]);
+  // Smooth fade in over first 10 frames
+  const fadeIn = interpolate(localFrame, [0, 10], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // Smooth fade out over last 8 frames
+  const fadeOut = interpolate(localFrame, [dur - 8, dur], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const opacity = fadeIn * fadeOut;
 
   return (
-    <AbsoluteFill
-      className={bg || ""}
-      style={{
-        opacity,
-        transform: `scale(${scale})`,
-        filter: `blur(${blur}px)`,
-      }}
-    >
+    <AbsoluteFill className={bg || "bg-zinc-950"} style={{ opacity }}>
       {children}
     </AbsoluteFill>
   );
@@ -221,34 +214,83 @@ export const MainVideo: React.FC = () => {
   return (
     <AbsoluteFill className="bg-zinc-950 font-sans overflow-hidden">
 
-      {/* ═══ SCENE 1: HOOK ═══ (0–52) */}
-      <Sequence from={0} durationInFrames={52}>
-        <Audio src={staticFile("audio/s01.m4a")} />
-        <Scene frame={frame} fps={fps} from={0} dur={52} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
-          <GradientOrb x={20} y={30} size={400} color1="rgba(99,102,241,0.3)" color2="transparent" frame={frame} />
-          <GradientOrb x={70} y={60} size={300} color1="rgba(168,85,247,0.25)" color2="transparent" frame={frame} delay={50} />
+      {/* ═══ SCENE 0: HOOK — Stats that stop the scroll ═══ (0–165) */}
+      <Sequence from={0} durationInFrames={165}>
+        <Audio src={staticFile("audio/s00.m4a")} />
+        <Scene frame={frame} fps={fps} from={0} dur={165}>
+          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.6} />
+          <GradientOrb x={50} y={50} size={700} color1="rgba(99,102,241,0.25)" color2="rgba(168,85,247,0.15)" frame={frame} />
+          <GradientOrb x={20} y={70} size={400} color1="rgba(236,72,153,0.15)" color2="transparent" frame={frame} delay={40} />
+          <GradientOrb x={80} y={30} size={350} color1="rgba(52,211,153,0.12)" color2="transparent" frame={frame} delay={80} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* "100% Free" badge at top */}
+            {/* "100% Free" pill */}
             {(() => {
               const p = spring({ frame, fps, config: { damping: 14 } });
               return (
-                <div
-                  className="mb-10"
-                  style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [-30, 0])}px)` }}
-                >
-                  <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 px-8 py-3 rounded-full flex items-center gap-3">
-                    <Sparkles className="w-5 h-5 text-indigo-400" />
-                    <span className="text-indigo-300 text-xl font-semibold tracking-wide">100% Free — No Credit Card</span>
+                <div className="mb-12" style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [-20, 0])}px)` }}>
+                  <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-500/10 border border-emerald-500/30 px-8 py-3 rounded-full flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 12px rgba(52,211,153,0.6)" }} />
+                    <span className="text-emerald-300 text-xl font-semibold tracking-wide">100% Free for Early Users</span>
                   </div>
                 </div>
               );
             })()}
 
+            {/* Big stat counters */}
+            <div className="flex items-center gap-20 mb-14">
+              {[
+                { value: 8402, label: "Emails", suffix: "", delay: 10, color: "from-indigo-400 to-blue-400" },
+                { value: 142, label: "Meetings", suffix: "", delay: 30, color: "from-purple-400 to-pink-400" },
+                { value: 0, label: "Manual Work", suffix: "", delay: 55, color: "from-emerald-400 to-cyan-400", isZero: true },
+              ].map((stat, i) => {
+                const p = spring({ frame: frame - stat.delay, fps, config: { damping: 12 } });
+                const countUp = interpolate(frame, [stat.delay, stat.delay + 40], [0, stat.value], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+                return (
+                  <div
+                    key={i}
+                    className="text-center"
+                    style={{
+                      opacity: interpolate(p, [0, 1], [0, 1]),
+                      transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px) scale(${interpolate(p, [0, 1], [0.8, 1])})`,
+                    }}
+                  >
+                    <p className={`text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r ${stat.color} leading-none`}>
+                      {(stat as { isZero?: boolean }).isZero ? "Zero" : Math.floor(countUp).toLocaleString()}
+                    </p>
+                    <p className="text-2xl text-zinc-500 font-medium mt-3">{stat.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Tagline */}
+            {(() => {
+              const p = spring({ frame: frame - 80, fps, config: { damping: 14 } });
+              return (
+                <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)` }}>
+                  <p className="text-3xl text-zinc-400 font-medium tracking-wide">All on autopilot. All with one tool.</p>
+                </div>
+              );
+            })()}
+          </div>
+        </Scene>
+      </Sequence>
+
+      {/* ═══ SCENE 1: "Your outbound is broken." ═══ (165–217) */}
+      <Sequence from={165} durationInFrames={52}>
+        <Audio src={staticFile("audio/s01.m4a")} />
+        <Scene frame={frame} fps={fps} from={165} dur={52}>
+          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
+          <GradientOrb x={20} y={30} size={400} color1="rgba(99,102,241,0.3)" color2="transparent" frame={frame} />
+          <GradientOrb x={70} y={60} size={300} color1="rgba(168,85,247,0.25)" color2="transparent" frame={frame} delay={50} />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <GlowText
               text="Your outbound is broken."
-              frame={frame} fps={fps} startFrame={5}
+              frame={frame}
+              fps={fps}
+              startFrame={170}
               className="text-[6.5rem] font-black text-white tracking-tight leading-none"
               highlightWords={["broken."]}
               glowColor="rgba(239,68,68,0.5)"
@@ -257,10 +299,10 @@ export const MainVideo: React.FC = () => {
         </Scene>
       </Sequence>
 
-      {/* ═══ SCENE 2: PAIN POINTS ═══ (52–236) */}
-      <Sequence from={52} durationInFrames={184}>
+      {/* ═══ SCENE 2: PAIN POINTS ═══ (217–401) */}
+      <Sequence from={217} durationInFrames={184}>
         <Audio src={staticFile("audio/s02.m4a")} />
-        <Scene frame={frame} fps={fps} from={52} dur={184} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={217} dur={184} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(239,68,68,0.06)" speed={0.3} />
           <GradientOrb x={80} y={20} size={500} color1="rgba(239,68,68,0.15)" color2="transparent" frame={frame} />
           <GradientOrb x={10} y={70} size={350} color1="rgba(239,68,68,0.1)" color2="transparent" frame={frame} delay={30} />
@@ -272,7 +314,7 @@ export const MainVideo: React.FC = () => {
                 { icon: <Mail className="w-10 h-10" />, text: "Writing emails", delay: 40 },
                 { icon: <Clock className="w-10 h-10" />, text: "Following up", delay: 72 },
               ].map((item, i) => {
-                const lf = frame - 52;
+                const lf = frame - 217;
                 const p = spring({ frame: lf - item.delay, fps, config: { damping: 14 } });
                 return (
                   <div
@@ -281,7 +323,6 @@ export const MainVideo: React.FC = () => {
                     style={{
                       opacity: interpolate(p, [0, 1], [0, 1]),
                       transform: `translateX(${interpolate(p, [0, 1], [-80, 0])}px)`,
-                      filter: `blur(${interpolate(p, [0, 1], [6, 0])}px)`,
                     }}
                   >
                     <GlassCard className="p-5" glow="rgba(239,68,68,0.15)">
@@ -294,7 +335,7 @@ export const MainVideo: React.FC = () => {
               })}
 
               {(() => {
-                const lf = frame - 52;
+                const lf = frame - 217;
                 const p = spring({ frame: lf - 115, fps, config: { damping: 10 } });
                 return (
                   <div
@@ -302,7 +343,6 @@ export const MainVideo: React.FC = () => {
                     style={{
                       opacity: interpolate(p, [0, 1], [0, 1]),
                       transform: `scale(${interpolate(p, [0, 1], [0.3, 1])})`,
-                      filter: `blur(${interpolate(p, [0, 1], [10, 0])}px)`,
                     }}
                   >
                     <span
@@ -320,12 +360,12 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 3: PIVOT ═══ (236–293) */}
-      <Sequence from={236} durationInFrames={57}>
+      <Sequence from={401} durationInFrames={57}>
         <Audio src={staticFile("audio/s03.m4a")} />
-        <Scene frame={frame} fps={fps} from={236} dur={57}>
+        <Scene frame={frame} fps={fps} from={401} dur={57}>
           <div className="absolute inset-0" style={{
             background: `radial-gradient(circle at 50% 50%, rgba(99,102,241,0.3) 0%, transparent 70%)`,
-            transform: `scale(${interpolate(spring({ frame: frame - 236, fps, config: { damping: 8 } }), [0, 1], [0.5, 2.5])})`,
+            transform: `scale(${interpolate(spring({ frame: frame - 401, fps, config: { damping: 8 } }), [0, 1], [0.5, 2.5])})`,
           }} />
           <DotGrid frame={frame} color="rgba(168,85,247,0.1)" speed={0.8} />
           <GradientOrb x={50} y={50} size={600} color1="rgba(99,102,241,0.4)" color2="rgba(168,85,247,0.2)" frame={frame} />
@@ -333,7 +373,7 @@ export const MainVideo: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <GlowText
               text="What if AI could do all of it?"
-              frame={frame} fps={fps} startFrame={240}
+              frame={frame} fps={fps} startFrame={406}
               className="text-8xl font-black text-white tracking-tight"
               highlightWords={["AI"]}
               glowColor="rgba(99,102,241,0.6)"
@@ -343,14 +383,14 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 4: LOGO REVEAL ═══ (293–323) */}
-      <Sequence from={293} durationInFrames={30}>
+      <Sequence from={458} durationInFrames={30}>
         <Audio src={staticFile("audio/s04.m4a")} />
-        <Scene frame={frame} fps={fps} from={293} dur={30}>
+        <Scene frame={frame} fps={fps} from={458} dur={30}>
           <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.4} />
 
           {/* Expanding glow ring */}
           {(() => {
-            const p = spring({ frame: frame - 293, fps, config: { damping: 8 } });
+            const p = spring({ frame: frame - 458, fps, config: { damping: 8 } });
             const ringSize = interpolate(p, [0, 1], [0, 800]);
             return (
               <div
@@ -368,7 +408,7 @@ export const MainVideo: React.FC = () => {
 
           <div className="absolute inset-0 flex items-center justify-center">
             {(() => {
-              const p = spring({ frame: frame - 295, fps, config: { damping: 10, stiffness: 80 } });
+              const p = spring({ frame: frame - 460, fps, config: { damping: 10, stiffness: 80 } });
               return (
                 <div style={{ transform: `scale(${interpolate(p, [0, 1], [0, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
                   <div className="flex items-center gap-6">
@@ -388,16 +428,16 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 5: UPLOAD LEADS ═══ (323–566) */}
-      <Sequence from={323} durationInFrames={243}>
+      <Sequence from={488} durationInFrames={243}>
         <Audio src={staticFile("audio/s05.m4a")} />
-        <Scene frame={frame} fps={fps} from={323} dur={243} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={488} dur={243} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
           <GradientOrb x={15} y={25} size={400} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           <GradientOrb x={85} y={75} size={350} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={40} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
             {(() => {
-              const lf = frame - 323;
+              const lf = frame - 488;
               const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
               return (
                 <div className="mb-10" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]), transform: `translateY(${interpolate(headerP, [0, 1], [30, 0])}px)` }}>
@@ -412,7 +452,7 @@ export const MainVideo: React.FC = () => {
             <GradientBorderCard frame={frame} className="w-[1000px]">
               <div className="p-10">
                 {(() => {
-                  const lf = frame - 323;
+                  const lf = frame - 488;
                   return (
                     <div className="space-y-3">
                       {/* Column headers */}
@@ -440,7 +480,6 @@ export const MainVideo: React.FC = () => {
                             style={{
                               opacity: interpolate(rowP, [0, 1], [0, 1]),
                               transform: `translateX(${interpolate(rowP, [0, 1], [40, 0])}px)`,
-                              filter: `blur(${interpolate(rowP, [0, 1], [4, 0])}px)`,
                             }}
                           >
                             <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black text-lg mr-4">
@@ -465,16 +504,16 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 6: AI WRITES EMAILS ═══ (566–765) */}
-      <Sequence from={566} durationInFrames={199}>
+      <Sequence from={731} durationInFrames={199}>
         <Audio src={staticFile("audio/s06.m4a")} />
-        <Scene frame={frame} fps={fps} from={566} dur={199} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={731} dur={199} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(168,85,247,0.06)" speed={0.4} />
           <GradientOrb x={30} y={20} size={500} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           <GradientOrb x={70} y={80} size={400} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={60} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
             {(() => {
-              const lf = frame - 566;
+              const lf = frame - 731;
               const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
               return (
                 <div className="mb-8" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]), transform: `translateY(${interpolate(headerP, [0, 1], [30, 0])}px)` }}>
@@ -515,7 +554,7 @@ export const MainVideo: React.FC = () => {
                   </div>
 
                   {(() => {
-                    const lf = frame - 566;
+                    const lf = frame - 731;
                     const lines: { text: string; delay: number; bold?: boolean }[] = [
                       { text: "Hi Sarah,", delay: 25 },
                       { text: "I saw Stripe's latest API launch — the developer experience is remarkable.", delay: 45 },
@@ -555,15 +594,15 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 7: SENDS ON AUTOPILOT ═══ (765–911) */}
-      <Sequence from={765} durationInFrames={146}>
+      <Sequence from={930} durationInFrames={146}>
         <Audio src={staticFile("audio/s07.m4a")} />
-        <Scene frame={frame} fps={fps} from={765} dur={146} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={930} dur={146} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(52,211,153,0.06)" speed={0.3} />
           <GradientOrb x={20} y={40} size={400} color1="rgba(52,211,153,0.15)" color2="transparent" frame={frame} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
             {(() => {
-              const lf = frame - 765;
+              const lf = frame - 930;
               const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
               return (
                 <div className="mb-8" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
@@ -584,7 +623,7 @@ export const MainVideo: React.FC = () => {
                   { name: "Alex Rivera", status: "Queued", time: "In 8m", color: "zinc", delay: 56 },
                   { name: "Maria Santos", status: "Queued", time: "In 16m", color: "zinc", delay: 70 },
                 ].map((item, i) => {
-                  const lf = frame - 765;
+                  const lf = frame - 930;
                   const p = spring({ frame: lf - item.delay, fps, config: { damping: 14 } });
                   const colors: Record<string, { bg: string; text: string; glow: string }> = {
                     emerald: { bg: "bg-emerald-500/20", text: "text-emerald-400", glow: "drop-shadow(0 0 6px rgba(52,211,153,0.5))" },
@@ -617,7 +656,7 @@ export const MainVideo: React.FC = () => {
             </GradientBorderCard>
 
             {(() => {
-              const lf = frame - 765;
+              const lf = frame - 930;
               const p = spring({ frame: lf - 80, fps, config: { damping: 14 } });
               return (
                 <p className="text-xl text-zinc-500 font-medium flex items-center gap-3 mt-6" style={{ opacity: interpolate(p, [0, 1], [0, 1]) }}>
@@ -630,15 +669,15 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 8: ANALYTICS ═══ (911–1050) */}
-      <Sequence from={911} durationInFrames={139}>
+      <Sequence from={1076} durationInFrames={139}>
         <Audio src={staticFile("audio/s08.m4a")} />
-        <Scene frame={frame} fps={fps} from={911} dur={139} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={1076} dur={139} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
           <GradientOrb x={50} y={30} size={500} color1="rgba(99,102,241,0.15)" color2="transparent" frame={frame} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
             {(() => {
-              const lf = frame - 911;
+              const lf = frame - 1076;
               const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
               return (
                 <h2 className="text-7xl font-black text-white text-center tracking-tight mb-12" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
@@ -653,7 +692,7 @@ export const MainVideo: React.FC = () => {
                 { label: "Open Rate", value: 67.3, suffix: "%", icon: <TrendingUp className="w-8 h-8" />, color: "purple", growth: "+8%", ringPct: 67, delay: 30 },
                 { label: "Meetings Booked", value: 142, icon: <Target className="w-8 h-8" />, color: "emerald", growth: "+23%", ringPct: 92, delay: 45 },
               ].map((stat, i) => {
-                const lf = frame - 911;
+                const lf = frame - 1076;
                 const p = spring({ frame: lf - stat.delay, fps, config: { damping: 12 } });
                 const countUp = interpolate(lf, [stat.delay, stat.delay + 60], [0, stat.value], { extrapolateRight: "clamp" });
                 const ringUp = interpolate(lf, [stat.delay + 10, stat.delay + 50], [0, stat.ringPct], { extrapolateRight: "clamp" });
@@ -692,15 +731,15 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 9: USE CASES ═══ (1050–1180) */}
-      <Sequence from={1050} durationInFrames={130}>
+      <Sequence from={1215} durationInFrames={130}>
         <Audio src={staticFile("audio/s09.m4a")} />
-        <Scene frame={frame} fps={fps} from={1050} dur={130} bg="bg-zinc-950">
+        <Scene frame={frame} fps={fps} from={1215} dur={130} bg="bg-zinc-950">
           <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
           <GradientOrb x={40} y={60} size={500} color1="rgba(99,102,241,0.15)" color2="rgba(168,85,247,0.1)" frame={frame} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
             {(() => {
-              const lf = frame - 1050;
+              const lf = frame - 1215;
               const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
               return (
                 <h2 className="text-7xl font-black text-white text-center tracking-tight mb-14" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
@@ -716,7 +755,7 @@ export const MainVideo: React.FC = () => {
                 { icon: <Target className="w-12 h-12" />, title: "Sales Teams", desc: "10x your outbound pipeline", delay: 26 },
                 { icon: <Users className="w-12 h-12" />, title: "Recruiters", desc: "Fill roles 3x faster", delay: 40 },
               ].map((item, i) => {
-                const lf = frame - 1050;
+                const lf = frame - 1215;
                 const p = spring({ frame: lf - item.delay, fps, config: { damping: 12 } });
                 return (
                   <GlassCard
@@ -742,16 +781,16 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 10: 100% FREE ═══ (1180–1297) */}
-      <Sequence from={1180} durationInFrames={117}>
+      <Sequence from={1345} durationInFrames={117}>
         <Audio src={staticFile("audio/s10.m4a")} />
-        <Scene frame={frame} fps={fps} from={1180} dur={117}>
+        <Scene frame={frame} fps={fps} from={1345} dur={117}>
           <GradientOrb x={30} y={40} size={600} color1="rgba(99,102,241,0.4)" color2="rgba(168,85,247,0.2)" frame={frame} />
           <GradientOrb x={70} y={60} size={500} color1="rgba(168,85,247,0.3)" color2="transparent" frame={frame} delay={30} />
           <DotGrid frame={frame} color="rgba(255,255,255,0.04)" speed={0.5} />
 
           <div className="absolute inset-0 flex items-center justify-center">
             {(() => {
-              const p = spring({ frame: frame - 1180, fps, config: { damping: 10 } });
+              const p = spring({ frame: frame - 1345, fps, config: { damping: 10 } });
               return (
                 <div className="text-center" style={{ transform: `scale(${interpolate(p, [0, 1], [0.3, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
                   <p className="text-4xl text-indigo-300 font-bold mb-8">And right now?</p>
@@ -770,15 +809,15 @@ export const MainVideo: React.FC = () => {
       </Sequence>
 
       {/* ═══ SCENE 11: EXIT CTA ═══ (1297–1373) */}
-      <Sequence from={1297} durationInFrames={76}>
+      <Sequence from={1462} durationInFrames={76}>
         <Audio src={staticFile("audio/s11.m4a")} />
-        <Scene frame={frame} fps={fps} from={1297} dur={76}>
+        <Scene frame={frame} fps={fps} from={1462} dur={76}>
           <GradientOrb x={50} y={50} size={800} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
           <DotGrid frame={frame} color="rgba(99,102,241,0.05)" speed={0.4} />
 
           <div className="absolute inset-0 flex items-center justify-center">
             {(() => {
-              const p = spring({ frame: frame - 1297, fps, config: { damping: 10 } });
+              const p = spring({ frame: frame - 1462, fps, config: { damping: 10 } });
               return (
                 <div className="flex flex-col items-center" style={{ transform: `scale(${interpolate(p, [0, 1], [0.5, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
                   <div className="flex items-center gap-5 mb-10">
