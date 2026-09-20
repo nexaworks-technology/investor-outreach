@@ -299,13 +299,13 @@ export default function LandingPage() {
         {/* Bottom CTA */}
         <section className="pb-24 pt-12 max-w-6xl mx-auto px-6 relative">
           <div className="rounded-3xl bg-gradient-to-b from-indigo-50 to-indigo-100/50 border border-indigo-100 p-12 md:p-20 text-center relative overflow-hidden shadow-sm">
-            <div className="absolute inset-x-0 bottom-0 opacity-40 mix-blend-multiply flex justify-center w-full h-[250px] overflow-hidden rounded-b-3xl">
+            <div className="absolute inset-x-0 bottom-0 opacity-60 mix-blend-multiply flex justify-center w-full h-full overflow-hidden rounded-b-3xl pointer-events-none">
                <Image 
                   src="/mountains.jpg" 
                   alt="Mountains Background" 
                   width={1200} 
-                  height={300} 
-                  className="w-full h-full object-cover object-top" 
+                  height={800} 
+                  className="w-full h-full object-cover object-bottom" 
                />
             </div>
             
