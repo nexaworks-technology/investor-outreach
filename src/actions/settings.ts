@@ -1,22 +1,22 @@
 "use server";
 import { db } from "@/lib/db";
-import { getAuthUser } from "./auth";
+import { requireWorkspace } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export async function getWorkspaceSettings() {
-  const user = await getAuthUser();
+  const { workspace } = await requireWorkspace();
   const settings = await db.workspaceSettings.upsert({
-    where: { workspaceId: user.workspaceId },
+    where: { workspaceId: workspace.id },
     update: {},
-    create: { workspaceId: user.workspaceId }
+    create: { workspaceId: workspace.id }
   });
   return settings;
 }
 
 export async function updateSendingLimits(data: { dailySendLimit: number; sendOnWeekends: boolean; sendWindowStart: string; sendWindowEnd: string }) {
-  const user = await getAuthUser();
+  const { workspace } = await requireWorkspace();
   await db.workspaceSettings.upsert({
-    where: { workspaceId: user.workspaceId },
+    where: { workspaceId: workspace.id },
     update: {
       dailySendLimit: data.dailySendLimit,
       sendOnWeekends: data.sendOnWeekends,
@@ -24,7 +24,7 @@ export async function updateSendingLimits(data: { dailySendLimit: number; sendOn
       sendWindowEnd: data.sendWindowEnd
     },
     create: {
-      workspaceId: user.workspaceId,
+      workspaceId: workspace.id,
       dailySendLimit: data.dailySendLimit,
       sendOnWeekends: data.sendOnWeekends,
       sendWindowStart: data.sendWindowStart,
