@@ -22,32 +22,30 @@ function InvestorsContent() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Investors</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Leads</h2>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" onClick={() => setIsImportOpen(true)}>
             <Upload className="mr-2 h-4 w-4" />
             Import CSV
           </Button>
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
           <Button size="sm" onClick={() => setIsAddOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Investor
+            Add Lead
           </Button>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search investors..."
-            className="pl-8"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="flex items-center justify-between">
+        <div className="flex flex-1 items-center space-x-2">
+          <div className="relative w-72">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search leads..." 
+              className="pl-8" 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
         
         <div className="flex border rounded-md">
