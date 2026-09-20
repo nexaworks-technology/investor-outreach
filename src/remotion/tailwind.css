@@ -1447,6 +1447,9 @@
   .rounded-\[4px\] {
     border-radius: 4px;
   }
+  .rounded-\[30px\] {
+    border-radius: 30px;
+  }
   .rounded-\[calc\(var\(--radius\)-3px\)\] {
     border-radius: calc(var(--radius) - 3px);
   }

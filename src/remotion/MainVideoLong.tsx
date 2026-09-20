@@ -101,12 +101,13 @@ const GlassCard: React.FC<{
 /** Animated gradient border card */
 const GradientBorderCard: React.FC<{
   children: React.ReactNode;
-  frame: number;
+  frame?: number;
   className?: string;
-}> = ({ children, frame, className = "" }) => {
+  containerClassName?: string;
+}> = ({ children, frame = 0, className = "", containerClassName = "" }) => {
   const angle = frame * 2;
   return (
-    <div className={`relative rounded-[2rem] p-[2px] ${className}`}>
+    <div className={`relative rounded-[2rem] p-[2px] ${containerClassName}`}>
       <div
         className="absolute inset-0 rounded-[2rem]"
         style={{
@@ -114,7 +115,7 @@ const GradientBorderCard: React.FC<{
           opacity: 0.8,
         }}
       />
-      <div className="relative bg-zinc-950 rounded-[2rem] overflow-hidden">
+      <div className={`relative bg-zinc-950 rounded-[30px] overflow-hidden w-full h-full ${className}`}>
         {children}
       </div>
     </div>
@@ -449,7 +450,7 @@ export const MainVideoLong: React.FC = () => {
               );
             })()}
 
-            <GradientBorderCard frame={frame} className="w-[1000px]">
+            <GradientBorderCard frame={frame} containerClassName="w-[1000px]" className="h-full">
               <div className="p-10">
                 {(() => {
                   const lf = frame - 488;
@@ -525,7 +526,7 @@ export const MainVideoLong: React.FC = () => {
               );
             })()}
 
-            <GradientBorderCard frame={frame} className="w-[1100px]">
+            <GradientBorderCard frame={frame} containerClassName="w-[1100px]" className="h-full">
               <div className="p-10">
                 <div className="flex items-center justify-between mb-8 pb-8 border-b border-white/10">
                   <div className="flex items-center gap-5">
@@ -614,7 +615,7 @@ export const MainVideoLong: React.FC = () => {
               );
             })()}
 
-            <GradientBorderCard frame={frame} className="w-[1000px]">
+            <GradientBorderCard frame={frame} containerClassName="w-[1000px]" className="h-full">
               <div className="p-8">
                 {[
                   { name: "Sarah Chen", status: "Sent", time: "2m ago", color: "emerald", delay: 15 },

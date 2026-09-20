@@ -101,12 +101,13 @@ const GlassCard: React.FC<{
 /** Animated gradient border card */
 const GradientBorderCard: React.FC<{
   children: React.ReactNode;
-  frame: number;
+  frame?: number;
   className?: string;
-}> = ({ children, frame, className = "" }) => {
+  containerClassName?: string;
+}> = ({ children, frame = 0, className = "", containerClassName = "" }) => {
   const angle = frame * 2;
   return (
-    <div className={`relative rounded-[2rem] p-[2px] ${className}`}>
+    <div className={`relative rounded-[2rem] p-[2px] ${containerClassName}`}>
       <div
         className="absolute inset-0 rounded-[2rem]"
         style={{
@@ -114,7 +115,7 @@ const GradientBorderCard: React.FC<{
           opacity: 0.8,
         }}
       />
-      <div className="relative bg-zinc-950 rounded-[2rem] overflow-hidden">
+      <div className={`relative bg-zinc-950 rounded-[30px] overflow-hidden w-full h-full ${className}`}>
         {children}
       </div>
     </div>
@@ -327,7 +328,7 @@ export const MainVideoShort: React.FC = () => {
               const p = spring({ frame: frame - 240, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
-                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                  <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
                     <Upload className="w-12 h-12 text-indigo-400 mb-4" />
                     <h3 className="font-bold text-xl mb-2">Import Leads</h3>
                     <p className="text-zinc-400 text-sm">Upload your CSV</p>
@@ -343,7 +344,7 @@ export const MainVideoShort: React.FC = () => {
               const p = spring({ frame: frame - 280, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
-                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                  <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
                     <Sparkles className="w-12 h-12 text-purple-400 mb-4" />
                     <h3 className="font-bold text-xl mb-2">AI Personalize</h3>
                     <p className="text-zinc-400 text-sm">Craft perfect emails</p>
@@ -359,7 +360,7 @@ export const MainVideoShort: React.FC = () => {
               const p = spring({ frame: frame - 330, fps, config: { damping: 12 } });
               return (
                 <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
-                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                  <GradientBorderCard containerClassName="w-64" className="p-8 flex flex-col items-center text-center">
                     <Send className="w-12 h-12 text-emerald-400 mb-4" />
                     <h3 className="font-bold text-xl mb-2">Launch</h3>
                     <p className="text-zinc-400 text-sm">Send campaign</p>
@@ -417,7 +418,7 @@ export const MainVideoShort: React.FC = () => {
 
                   {/* Draft appears after click */}
                   <div className="w-[500px]" style={{ opacity: interpolate(pDraft, [0, 1], [0, 1]), transform: `translateY(${interpolate(pDraft, [0, 1], [20, 0])}px)` }}>
-                    <GradientBorderCard className="p-5 border-l-4 border-l-purple-500">
+                    <GradientBorderCard containerClassName="w-full" className="p-6 border-l-4 border-l-purple-500">
                       <p className="text-lg text-zinc-300 leading-relaxed">
                         Hi John, absolutely. I've attached our deck below. Let me know if you have any questions!<Cursor blink={true} />
                       </p>
