@@ -1,16 +1,17 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bell } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function getPageTitle(pathname: string) {
   if (pathname === "/dashboard") return "Dashboard";
-  if (pathname.startsWith("/investors")) return "Investors";
+  if (pathname.startsWith("/investors")) return "Leads";
   if (pathname.startsWith("/campaigns")) return "Campaigns";
   if (pathname.startsWith("/templates")) return "Templates";
   if (pathname.startsWith("/audit-log")) return "Audit Log";
   if (pathname.startsWith("/settings")) return "Settings";
+  if (pathname.startsWith("/approvals")) return "Approvals";
   
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length > 0) {
@@ -40,8 +41,8 @@ export function Header() {
         
         <div className="h-8 w-px bg-border/50" />
         
-        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold ring-2 ring-border">
-          IO
+        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary ring-2 ring-border overflow-hidden">
+          <User className="h-4 w-4" />
         </div>
       </div>
     </header>
