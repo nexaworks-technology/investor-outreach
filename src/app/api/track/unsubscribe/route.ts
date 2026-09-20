@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
@@ -12,22 +12,22 @@ export async function GET(req: Request) {
     }
 
     // Mark the investor as opted out
-    await prisma.investor.update({
+    await db.investor.update({
       where: { id: investorId },
       data: {
         isOptedOut: true,
-        pipelineStatus: 'REJECTED'
+        pipelineStatus: 'DO_NOT_CONTACT'
       }
     });
 
     if (emailId) {
       // Optional: Log it in the timeline or somewhere, or mark CampaignInvestor as OPTED_OUT
-      const email = await prisma.emailMessage.findUnique({
+      const email = await db.emailMessage.findUnique({
         where: { id: emailId },
         select: { campaignInvestorId: true }
       });
       if (email?.campaignInvestorId) {
-        await prisma.campaignInvestor.update({
+        await db.campaignInvestor.update({
           where: { id: email.campaignInvestorId },
           data: { status: 'OPTED_OUT' }
         });
