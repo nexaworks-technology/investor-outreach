@@ -207,642 +207,336 @@ const GlowText: React.FC<{
 /* ═══════════════════════════════════════════════════════
    MAIN VIDEO
    ═══════════════════════════════════════════════════════ */
+
 export const MainVideo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   return (
-    <AbsoluteFill className="bg-zinc-950 font-sans overflow-hidden">
+    <AbsoluteFill className="bg-zinc-950 font-sans overflow-hidden text-white">
 
-      {/* ═══ SCENE 0: HOOK — Stats that stop the scroll ═══ (0–165) */}
-      <Sequence from={52} durationInFrames={165}>
-        <Audio src={staticFile("audio/s00.m4a")} />
-        <Scene frame={frame} fps={fps} from={52} dur={165}>
-          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.6} />
-          <GradientOrb x={50} y={50} size={700} color1="rgba(99,102,241,0.25)" color2="rgba(168,85,247,0.15)" frame={frame} />
-          <GradientOrb x={20} y={70} size={400} color1="rgba(236,72,153,0.15)" color2="transparent" frame={frame} delay={40} />
-          <GradientOrb x={80} y={30} size={350} color1="rgba(52,211,153,0.12)" color2="transparent" frame={frame} delay={80} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* "100% Free" pill */}
-            {(() => {
-              const p = spring({ frame, fps, config: { damping: 14 } });
-              return (
-                <div className="mb-12" style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [-20, 0])}px)` }}>
-                  <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-500/10 border border-emerald-500/30 px-8 py-3 rounded-full flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 12px rgba(52,211,153,0.6)" }} />
-                    <span className="text-emerald-300 text-xl font-semibold tracking-wide">100% Free for Early Users</span>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Big stat counters */}
-            <div className="flex items-center gap-20 mb-14">
-              {[
-                { value: 8402, label: "Emails", suffix: "", delay: 10, color: "from-indigo-400 to-blue-400" },
-                { value: 142, label: "Meetings", suffix: "", delay: 30, color: "from-purple-400 to-pink-400" },
-                { value: 0, label: "Manual Work", suffix: "", delay: 55, color: "from-emerald-400 to-cyan-400", isZero: true },
-              ].map((stat, i) => {
-                const p = spring({ frame: frame - stat.delay, fps, config: { damping: 12 } });
-                const countUp = interpolate(frame, [stat.delay, stat.delay + 40], [0, stat.value], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
-                return (
-                  <div
-                    key={i}
-                    className="text-center"
-                    style={{
-                      opacity: interpolate(p, [0, 1], [0, 1]),
-                      transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px) scale(${interpolate(p, [0, 1], [0.8, 1])})`,
-                    }}
-                  >
-                    <p className={`text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r ${stat.color} leading-none`}>
-                      {(stat as { isZero?: boolean }).isZero ? "Zero" : Math.floor(countUp).toLocaleString()}
-                    </p>
-                    <p className="text-2xl text-zinc-500 font-medium mt-3">{stat.label}</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Tagline */}
-            {(() => {
-              const p = spring({ frame: frame - 80, fps, config: { damping: 14 } });
-              return (
-                <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)` }}>
-                  <p className="text-3xl text-zinc-400 font-medium tracking-wide">All on autopilot. All with one tool.</p>
-                </div>
-              );
-            })()}
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 1: "Your outbound is broken." ═══ (165–217) */}
-      <Sequence from={0} durationInFrames={52}>
-        <Audio src={staticFile("audio/s01.m4a")} />
-        <Scene frame={frame} fps={fps} from={0} dur={52}>
-          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
-          <GradientOrb x={20} y={30} size={400} color1="rgba(99,102,241,0.3)" color2="transparent" frame={frame} />
-          <GradientOrb x={70} y={60} size={300} color1="rgba(168,85,247,0.25)" color2="transparent" frame={frame} delay={50} />
+      {/* ═══ SCENE 1: HOOK (0–136) ═══ */}
+      <Sequence from={0} durationInFrames={136}>
+        <Audio src={staticFile("audio2/s01.m4a")} />
+        <Scene frame={frame} fps={fps} from={0} dur={136}>
+          <DotGrid frame={frame} color="rgba(239,68,68,0.08)" speed={0.5} />
+          <GradientOrb x={20} y={30} size={400} color1="rgba(239,68,68,0.2)" color2="transparent" frame={frame} />
+          <GradientOrb x={80} y={70} size={500} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={20} />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <GlowText
-              text="Your outbound is broken."
-              frame={frame}
-              fps={fps}
-              startFrame={5}
-              className="text-[6.5rem] font-black text-white tracking-tight leading-none"
-              highlightWords={["broken."]}
+              text="Still doing outbound manually?"
+              frame={frame} fps={fps} startFrame={5}
+              className="text-6xl font-black text-white tracking-tight leading-none mb-16"
+              highlightWords={["manually?"]}
               glowColor="rgba(239,68,68,0.5)"
             />
-          </div>
-        </Scene>
-      </Sequence>
 
-      {/* ═══ SCENE 2: PAIN POINTS ═══ (217–401) */}
-      <Sequence from={217} durationInFrames={184}>
-        <Audio src={staticFile("audio/s02.m4a")} />
-        <Scene frame={frame} fps={fps} from={217} dur={184} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(239,68,68,0.06)" speed={0.3} />
-          <GradientOrb x={80} y={20} size={500} color1="rgba(239,68,68,0.15)" color2="transparent" frame={frame} />
-          <GradientOrb x={10} y={70} size={350} color1="rgba(239,68,68,0.1)" color2="transparent" frame={frame} delay={30} />
-
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-10">
+            {/* Tool switching visual */}
+            <div className="flex items-center justify-center gap-8 relative mt-10">
               {[
-                { icon: <Users className="w-10 h-10" />, text: "Researching leads", delay: 8 },
-                { icon: <Mail className="w-10 h-10" />, text: "Writing emails", delay: 40 },
-                { icon: <Clock className="w-10 h-10" />, text: "Following up", delay: 72 },
+                { icon: BarChart3, label: "Spreadsheet", color: "from-green-500 to-emerald-600", delay: 30 },
+                { icon: ArrowUpRight, label: "Switch", isArrow: true, delay: 40 },
+                { icon: Bot, label: "AI Tool", color: "from-purple-500 to-fuchsia-600", delay: 50 },
+                { icon: ArrowUpRight, label: "Switch", isArrow: true, delay: 60 },
+                { icon: Mail, label: "Gmail", color: "from-red-500 to-rose-600", delay: 70 },
               ].map((item, i) => {
-                const lf = frame - 217;
-                const p = spring({ frame: lf - item.delay, fps, config: { damping: 14 } });
+                const p = spring({ frame: frame - item.delay, fps, config: { damping: 12 } });
+                
+                if (item.isArrow) {
+                  return (
+                    <div key={i} style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `scale(${interpolate(p, [0, 1], [0, 1])})` }}>
+                      <ArrowUpRight className="w-8 h-8 text-zinc-500" />
+                    </div>
+                  );
+                }
+
                 return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-8"
-                    style={{
-                      opacity: interpolate(p, [0, 1], [0, 1]),
-                      transform: `translateX(${interpolate(p, [0, 1], [-80, 0])}px)`,
-                    }}
-                  >
-                    <GlassCard className="p-5" glow="rgba(239,68,68,0.15)">
-                      <div className="text-red-400">{item.icon}</div>
+                  <div key={i} style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)` }}>
+                    <GlassCard className="p-6 flex flex-col items-center justify-center w-32 h-32">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-3`}>
+                        <item.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-xs font-semibold text-zinc-300">{item.label}</span>
                     </GlassCard>
-                    <span className="text-5xl font-bold text-white/90">{item.text}</span>
-                    <div className="w-3 h-3 rounded-full bg-red-500/60" style={{ boxShadow: "0 0 20px rgba(239,68,68,0.5)" }} />
                   </div>
                 );
               })}
-
-              {(() => {
-                const lf = frame - 217;
-                const p = spring({ frame: lf - 115, fps, config: { damping: 10 } });
-                return (
-                  <div
-                    className="mt-10"
-                    style={{
-                      opacity: interpolate(p, [0, 1], [0, 1]),
-                      transform: `scale(${interpolate(p, [0, 1], [0.3, 1])})`,
-                    }}
-                  >
-                    <span
-                      className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400"
-                      style={{ textShadow: "0 0 60px rgba(239,68,68,0.4)" }}
-                    >
-                      And still... crickets. 🦗
-                    </span>
-                  </div>
-                );
-              })()}
             </div>
           </div>
         </Scene>
       </Sequence>
 
-      {/* ═══ SCENE 3: PIVOT ═══ (236–293) */}
-      <Sequence from={401} durationInFrames={57}>
-        <Audio src={staticFile("audio/s03.m4a")} />
-        <Scene frame={frame} fps={fps} from={401} dur={57}>
-          <div className="absolute inset-0" style={{
-            background: `radial-gradient(circle at 50% 50%, rgba(99,102,241,0.3) 0%, transparent 70%)`,
-            transform: `scale(${interpolate(spring({ frame: frame - 401, fps, config: { damping: 8 } }), [0, 1], [0.5, 2.5])})`,
-          }} />
-          <DotGrid frame={frame} color="rgba(168,85,247,0.1)" speed={0.8} />
-          <GradientOrb x={50} y={50} size={600} color1="rgba(99,102,241,0.4)" color2="rgba(168,85,247,0.2)" frame={frame} />
-
+      {/* ═══ SCENE 2: INTRO (136–232) ═══ */}
+      <Sequence from={136} durationInFrames={96}>
+        <Audio src={staticFile("audio2/s02.m4a")} />
+        <Scene frame={frame} fps={fps} from={136} dur={96}>
+          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.5} />
+          <GradientOrb x={50} y={50} size={600} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
+          
           <div className="absolute inset-0 flex items-center justify-center">
+            {(() => {
+              const p = spring({ frame: frame - 136, fps, config: { damping: 14 } });
+              return (
+                <div style={{ transform: `scale(${interpolate(p, [0, 1], [0.8, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }} className="flex flex-col items-center">
+                  <div className="flex items-center gap-4 mb-8">
+                     <Img src={staticFile("logo.jpg")} className="w-12 h-12 rounded-xl object-cover shadow-[0_0_30px_rgba(99,102,241,0.4)]" />
+                     <span className="text-4xl font-bold tracking-tight">Doodle</span>
+                  </div>
+                  
+                  {/* Mock Dashboard */}
+                  <GlassCard className="w-[800px] h-[450px] p-6 flex flex-col" glow="rgba(99,102,241,0.15)">
+                    <div className="w-full h-8 border-b border-white/10 mb-6 flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                    </div>
+                    <div className="flex gap-6 h-full">
+                      <div className="w-48 space-y-4">
+                        <div className="h-4 w-full bg-white/10 rounded" />
+                        <div className="h-4 w-3/4 bg-white/5 rounded" />
+                        <div className="h-4 w-5/6 bg-white/5 rounded" />
+                        <div className="h-4 w-full bg-white/5 rounded" />
+                      </div>
+                      <div className="flex-1 space-y-6">
+                        <div className="flex gap-4">
+                          <div className="h-24 flex-1 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 rounded-xl" />
+                          <div className="h-24 flex-1 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 rounded-xl" />
+                          <div className="h-24 flex-1 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 rounded-xl" />
+                        </div>
+                        <div className="h-48 w-full bg-white/5 rounded-xl border border-white/5" />
+                      </div>
+                    </div>
+                  </GlassCard>
+                </div>
+              );
+            })()}
+          </div>
+        </Scene>
+      </Sequence>
+
+      {/* ═══ SCENE 3: DEMO (232–395) ═══ */}
+      <Sequence from={232} durationInFrames={163}>
+        <Audio src={staticFile("audio2/s03.m4a")} />
+        <Scene frame={frame} fps={fps} from={232} dur={163}>
+          <DotGrid frame={frame} color="rgba(99,102,241,0.08)" speed={0.4} />
+          
+          <div className="absolute inset-0 flex items-center justify-center gap-12">
+            {/* Step 1: Import */}
+            {(() => {
+              const p = spring({ frame: frame - 240, fps, config: { damping: 12 } });
+              return (
+                <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
+                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                    <Upload className="w-12 h-12 text-indigo-400 mb-4" />
+                    <h3 className="font-bold text-xl mb-2">Import Leads</h3>
+                    <p className="text-zinc-400 text-sm">Upload your CSV</p>
+                  </GradientBorderCard>
+                </div>
+              );
+            })()}
+
+            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 270, fps }) }} />
+
+            {/* Step 2: AI Personalize */}
+            {(() => {
+              const p = spring({ frame: frame - 280, fps, config: { damping: 12 } });
+              return (
+                <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
+                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                    <Sparkles className="w-12 h-12 text-purple-400 mb-4" />
+                    <h3 className="font-bold text-xl mb-2">AI Personalize</h3>
+                    <p className="text-zinc-400 text-sm">Craft perfect emails</p>
+                  </GradientBorderCard>
+                </div>
+              );
+            })()}
+
+            <ArrowUpRight className="w-10 h-10 text-zinc-600" style={{ opacity: spring({ frame: frame - 320, fps }) }} />
+
+            {/* Step 3: Launch */}
+            {(() => {
+              const p = spring({ frame: frame - 330, fps, config: { damping: 12 } });
+              return (
+                <div style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px)` }}>
+                  <GradientBorderCard className="p-8 w-64 flex flex-col items-center text-center">
+                    <Send className="w-12 h-12 text-emerald-400 mb-4" />
+                    <h3 className="font-bold text-xl mb-2">Launch</h3>
+                    <p className="text-zinc-400 text-sm">Send campaign</p>
+                  </GradientBorderCard>
+                </div>
+              );
+            })()}
+          </div>
+        </Scene>
+      </Sequence>
+
+      {/* ═══ SCENE 4: REPLY (395–539) ═══ */}
+      <Sequence from={395} durationInFrames={144}>
+        <Audio src={staticFile("audio2/s04.m4a")} />
+        <Scene frame={frame} fps={fps} from={395} dur={144}>
+          <GradientOrb x={30} y={30} size={600} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
+          <GradientOrb x={70} y={70} size={500} color1="rgba(236,72,153,0.15)" color2="transparent" frame={frame} delay={50} />
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* Incoming Message */}
+            {(() => {
+              const p = spring({ frame: frame - 400, fps, config: { damping: 14 } });
+              return (
+                <div className="w-[600px] mb-6" style={{ opacity: interpolate(p, [0, 1], [0, 1]), transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)` }}>
+                  <GlassCard className="p-6 border-l-4 border-l-indigo-500">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold text-sm">JD</div>
+                      <span className="font-semibold text-zinc-200">John Doe</span>
+                      <span className="text-xs text-zinc-500">Just now</span>
+                    </div>
+                    <p className="text-xl text-white">This looks interesting. Can you send the deck?</p>
+                  </GlassCard>
+                </div>
+              );
+            })()}
+
+            {/* AI Reply Button & Draft */}
+            {(() => {
+              const pBtn = spring({ frame: frame - 440, fps, config: { damping: 12 } });
+              // Simulate click at frame 470
+              const click = spring({ frame: frame - 470, fps, config: { damping: 10, stiffness: 200 } });
+              const scale = interpolate(click, [0, 0.5, 1], [1, 0.95, 1]);
+              
+              const pDraft = spring({ frame: frame - 480, fps, config: { damping: 14 } });
+
+              return (
+                <div className="w-[600px] flex flex-col items-end" style={{ opacity: interpolate(pBtn, [0, 1], [0, 1]) }}>
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-indigo-600 px-6 py-3 rounded-full flex items-center gap-2 font-bold shadow-[0_0_20px_rgba(168,85,247,0.4)] mb-6"
+                    style={{ transform: `scale(${scale})` }}
+                  >
+                    <Sparkles className="w-5 h-5 text-white" />
+                    <span>AI Reply</span>
+                  </div>
+
+                  {/* Draft appears after click */}
+                  <div className="w-[500px]" style={{ opacity: interpolate(pDraft, [0, 1], [0, 1]), transform: `translateY(${interpolate(pDraft, [0, 1], [20, 0])}px)` }}>
+                    <GradientBorderCard className="p-5 border-l-4 border-l-purple-500">
+                      <p className="text-lg text-zinc-300 leading-relaxed">
+                        Hi John, absolutely. I've attached our deck below. Let me know if you have any questions!<Cursor blink={true} />
+                      </p>
+                    </GradientBorderCard>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </Scene>
+      </Sequence>
+
+      {/* ═══ SCENE 5: PAYOFF (539–648) ═══ */}
+      <Sequence from={539} durationInFrames={109}>
+        <Audio src={staticFile("audio2/s05.m4a")} />
+        <Scene frame={frame} fps={fps} from={539} dur={109}>
+          <DotGrid frame={frame} color="rgba(52,211,153,0.08)" speed={0.5} />
+          <GradientOrb x={50} y={50} size={800} color1="rgba(52,211,153,0.15)" color2="transparent" frame={frame} />
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="flex gap-4 mb-6">
+              {[
+                { text: "Leads.", delay: 550 },
+                { text: "Outreach.", delay: 565 },
+                { text: "Replies.", delay: 580 },
+              ].map((item, i) => {
+                const p = spring({ frame: frame - item.delay, fps, config: { damping: 12 } });
+                return (
+                  <span 
+                    key={i} 
+                    className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-400 tracking-tight"
+                    style={{ 
+                      opacity: interpolate(p, [0, 1], [0, 1]),
+                      transform: `translateY(${interpolate(p, [0, 1], [30, 0])}px)`
+                    }}
+                  >
+                    {item.text}
+                  </span>
+                );
+              })}
+            </div>
+            
+            {(() => {
+              const p = spring({ frame: frame - 600, fps, config: { damping: 12 } });
+              return (
+                <div 
+                  className="bg-emerald-500 px-8 py-2 rounded-2xl"
+                  style={{ 
+                    opacity: interpolate(p, [0, 1], [0, 1]),
+                    transform: `scale(${interpolate(p, [0, 1], [0.5, 1])})`,
+                    boxShadow: "0 0 40px rgba(52,211,153,0.6)"
+                  }}
+                >
+                  <span className="text-7xl font-black text-white tracking-tight">One place.</span>
+                </div>
+              );
+            })()}
+          </div>
+        </Scene>
+      </Sequence>
+
+      {/* ═══ SCENE 6: THE CATCH (648–784) ═══ */}
+      <Sequence from={648} durationInFrames={136}>
+        <Audio src={staticFile("audio2/s06.m4a")} />
+        <Scene frame={frame} fps={fps} from={648} dur={136}>
+          <GradientOrb x={20} y={80} size={500} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
+          <GradientOrb x={80} y={20} size={500} color1="rgba(168,85,247,0.2)" color2="transparent" frame={frame} />
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <GlowText
-              text="What if AI could do all of it?"
-              frame={frame} fps={fps} startFrame={406}
-              className="text-8xl font-black text-white tracking-tight"
-              highlightWords={["AI"]}
-              glowColor="rgba(99,102,241,0.6)"
+              text="100% FREE FOR EARLY BETA USERS"
+              frame={frame} fps={fps} startFrame={655}
+              className="text-[5.5rem] font-black text-white text-center max-w-5xl leading-tight tracking-tight"
+              highlightWords={["FREE", "EARLY", "BETA"]}
+              glowColor="rgba(168,85,247,0.5)"
             />
           </div>
         </Scene>
       </Sequence>
 
-      {/* ═══ SCENE 4: LOGO REVEAL ═══ (293–323) */}
-      <Sequence from={458} durationInFrames={30}>
-        <Audio src={staticFile("audio/s04.m4a")} />
-        <Scene frame={frame} fps={fps} from={458} dur={30}>
-          <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.4} />
-
-          {/* Expanding glow ring */}
-          {(() => {
-            const p = spring({ frame: frame - 458, fps, config: { damping: 8 } });
-            const ringSize = interpolate(p, [0, 1], [0, 800]);
-            return (
-              <div
-                className="absolute rounded-full border-2 border-indigo-500/30"
-                style={{
-                  left: "50%", top: "50%",
-                  width: ringSize, height: ringSize,
-                  transform: "translate(-50%, -50%)",
-                  opacity: interpolate(p, [0, 1], [0.8, 0]),
-                  boxShadow: "0 0 60px rgba(99,102,241,0.3)",
-                }}
-              />
-            );
-          })()}
-
-          <div className="absolute inset-0 flex items-center justify-center">
+      {/* ═══ SCENE 7: CTA (784–884) ═══ */}
+      <Sequence from={784} durationInFrames={100}>
+        <Audio src={staticFile("audio2/s07.m4a")} />
+        <Scene frame={frame} fps={fps} from={784} dur={100}>
+          <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             {(() => {
-              const p = spring({ frame: frame - 460, fps, config: { damping: 10, stiffness: 80 } });
+              const pLogo = spring({ frame: frame - 790, fps, config: { damping: 12 } });
+              const pBtn = spring({ frame: frame - 810, fps, config: { damping: 12 } });
+              const pTag = spring({ frame: frame - 830, fps, config: { damping: 12 } });
+              
               return (
-                <div style={{ transform: `scale(${interpolate(p, [0, 1], [0, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
-                  <div className="flex items-center gap-6">
-                    <div
-                      className="rounded-3xl overflow-hidden bg-black"
-                      style={{ width: 120, height: 120, boxShadow: "0 0 60px rgba(99,102,241,0.4), 0 0 120px rgba(99,102,241,0.2)" }}
-                    >
+                <>
+                  <div style={{ opacity: interpolate(pLogo, [0, 1], [0, 1]), transform: `translateY(${interpolate(pLogo, [0, 1], [-20, 0])}px)` }} className="flex flex-col items-center mb-16">
+                    <div className="rounded-3xl overflow-hidden bg-black mb-6" style={{ width: 140, height: 140, boxShadow: "0 0 80px rgba(99,102,241,0.5)" }}>
                       <Img src={staticFile("logo.jpg")} className="w-full h-full object-cover" />
                     </div>
-                    <span className="text-9xl font-black text-white tracking-tight">Doodle</span>
+                    <span className="text-6xl font-bold tracking-tight">Doodle</span>
                   </div>
-                </div>
-              );
-            })()}
-          </div>
-        </Scene>
-      </Sequence>
 
-      {/* ═══ SCENE 5: UPLOAD LEADS ═══ (323–566) */}
-      <Sequence from={488} durationInFrames={243}>
-        <Audio src={staticFile("audio/s05.m4a")} />
-        <Scene frame={frame} fps={fps} from={488} dur={243} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
-          <GradientOrb x={15} y={25} size={400} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
-          <GradientOrb x={85} y={75} size={350} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={40} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
-            {(() => {
-              const lf = frame - 488;
-              const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
-              return (
-                <div className="mb-10" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]), transform: `translateY(${interpolate(headerP, [0, 1], [30, 0])}px)` }}>
-                  <div className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-8 py-3 rounded-full text-xl font-bold flex items-center gap-3 mb-6 mx-auto w-fit">
-                    <Upload className="w-6 h-6" /> Step 1
-                  </div>
-                  <h2 className="text-7xl font-black text-white text-center tracking-tight">Upload your leads</h2>
-                </div>
-              );
-            })()}
-
-            <GradientBorderCard frame={frame} className="w-[1000px]">
-              <div className="p-10">
-                {(() => {
-                  const lf = frame - 488;
-                  return (
-                    <div className="space-y-3">
-                      {/* Column headers */}
-                      <div className="flex items-center px-6 py-3 text-zinc-500 text-lg font-semibold uppercase tracking-wider">
-                        <span className="w-16" />
-                        <span className="flex-1">Name</span>
-                        <span className="flex-1">Company</span>
-                        <span className="flex-1">Email</span>
-                        <span className="w-20 text-right">Status</span>
-                      </div>
-
-                      {[
-                        { name: "Sarah Chen", co: "Stripe", email: "sarah@stripe.com", delay: 40 },
-                        { name: "James Wilson", co: "Notion", email: "james@notion.so", delay: 55 },
-                        { name: "Priya Sharma", co: "Figma", email: "priya@figma.com", delay: 70 },
-                        { name: "Alex Rivera", co: "Linear", email: "alex@linear.app", delay: 85 },
-                        { name: "Maria Santos", co: "Vercel", email: "maria@vercel.com", delay: 100 },
-                      ].map((row, i) => {
-                        const rowP = spring({ frame: lf - row.delay, fps, config: { damping: 14 } });
-                        const checkP = spring({ frame: lf - row.delay - 8, fps, config: { damping: 10 } });
-                        return (
-                          <div
-                            key={i}
-                            className="flex items-center bg-white/5 border border-white/10 rounded-xl px-6 py-4"
-                            style={{
-                              opacity: interpolate(rowP, [0, 1], [0, 1]),
-                              transform: `translateX(${interpolate(rowP, [0, 1], [40, 0])}px)`,
-                            }}
-                          >
-                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black text-lg mr-4">
-                              {row.name[0]}
-                            </div>
-                            <span className="text-xl font-bold text-white flex-1">{row.name}</span>
-                            <span className="text-xl text-zinc-400 flex-1">{row.co}</span>
-                            <span className="text-lg text-zinc-500 font-mono flex-1">{row.email}</span>
-                            <div className="w-20 flex justify-end" style={{ opacity: interpolate(checkP, [0, 1], [0, 1]), transform: `scale(${interpolate(checkP, [0, 1], [0, 1])})` }}>
-                              <CheckCircle2 className="w-7 h-7 text-emerald-400" style={{ filter: "drop-shadow(0 0 8px rgba(52,211,153,0.5))" }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-              </div>
-            </GradientBorderCard>
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 6: AI WRITES EMAILS ═══ (566–765) */}
-      <Sequence from={731} durationInFrames={199}>
-        <Audio src={staticFile("audio/s06.m4a")} />
-        <Scene frame={frame} fps={fps} from={731} dur={199} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(168,85,247,0.06)" speed={0.4} />
-          <GradientOrb x={30} y={20} size={500} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
-          <GradientOrb x={70} y={80} size={400} color1="rgba(168,85,247,0.15)" color2="transparent" frame={frame} delay={60} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
-            {(() => {
-              const lf = frame - 731;
-              const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
-              return (
-                <div className="mb-8" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]), transform: `translateY(${interpolate(headerP, [0, 1], [30, 0])}px)` }}>
-                  <div className="bg-purple-500/10 border border-purple-500/20 text-purple-400 px-8 py-3 rounded-full text-xl font-bold flex items-center gap-3 mb-6 mx-auto w-fit">
-                    <Bot className="w-6 h-6" /> Step 2
-                  </div>
-                  <h2 className="text-7xl font-black text-white text-center tracking-tight">AI writes every email</h2>
-                </div>
-              );
-            })()}
-
-            <GradientBorderCard frame={frame} className="w-[1100px]">
-              <div className="p-10">
-                <div className="flex items-center justify-between mb-8 pb-8 border-b border-white/10">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-black">
-                      SC
-                    </div>
-                    <div>
-                      <h3 className="text-3xl font-bold text-white">Sarah Chen</h3>
-                      <p className="text-xl text-zinc-500">CTO @ Stripe</p>
-                    </div>
-                  </div>
-                  <GlassCard className="px-5 py-3" glow="rgba(99,102,241,0.2)">
-                    <div className="flex items-center gap-2 text-indigo-400 font-bold text-lg">
-                      <Sparkles className="w-5 h-5" /> AI Drafting
-                      <Cursor frame={frame} />
-                    </div>
-                  </GlassCard>
-                </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-2xl leading-relaxed text-zinc-300 min-h-[260px] relative">
-                  <div
-                    className="absolute -top-5 -left-5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-xl"
-                    style={{ boxShadow: "0 0 30px rgba(99,102,241,0.4)" }}
+                  <div 
+                    style={{ opacity: interpolate(pBtn, [0, 1], [0, 1]), transform: `scale(${interpolate(pBtn, [0, 1], [0.8, 1])})` }}
+                    className="bg-white text-black px-10 py-5 rounded-full font-bold text-3xl flex items-center gap-4 shadow-[0_0_40px_rgba(255,255,255,0.3)] mb-8"
                   >
-                    <Sparkles className="w-6 h-6" />
+                    <span>Claim Free Early Access</span>
+                    <ArrowUpRight className="w-8 h-8" />
                   </div>
-
-                  {(() => {
-                    const lf = frame - 731;
-                    const lines: { text: string; delay: number; bold?: boolean }[] = [
-                      { text: "Hi Sarah,", delay: 25 },
-                      { text: "I saw Stripe's latest API launch — the developer experience is remarkable.", delay: 45 },
-                      { text: "We're building Doodle, an AI-powered outbound engine that automates personalized email at scale. Given your focus on developer tools, I think you'd find our approach interesting.", delay: 75 },
-                      { text: "Would love 10 minutes to show you a quick demo?", delay: 115, bold: true },
-                    ];
-                    const lastVisibleIdx = lines.reduce((acc, l, i) => (lf > l.delay ? i : acc), -1);
-
-                    return (
-                      <div className="space-y-4">
-                        {lines.map((line, i) => {
-                          const p = spring({ frame: lf - line.delay, fps, config: { damping: 14 } });
-                          const visible = lf > line.delay;
-                          if (!visible) return null;
-                          return (
-                            <p
-                              key={i}
-                              style={{
-                                opacity: interpolate(p, [0, 1], [0, 1]),
-                                transform: `translateY(${interpolate(p, [0, 1], [15, 0])}px)`,
-                              }}
-                              className={line.bold ? "text-indigo-400 font-bold" : ""}
-                            >
-                              {line.text}
-                              {i === lastVisibleIdx && <Cursor frame={frame} />}
-                            </p>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            </GradientBorderCard>
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 7: SENDS ON AUTOPILOT ═══ (765–911) */}
-      <Sequence from={930} durationInFrames={146}>
-        <Audio src={staticFile("audio/s07.m4a")} />
-        <Scene frame={frame} fps={fps} from={930} dur={146} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(52,211,153,0.06)" speed={0.3} />
-          <GradientOrb x={20} y={40} size={400} color1="rgba(52,211,153,0.15)" color2="transparent" frame={frame} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
-            {(() => {
-              const lf = frame - 930;
-              const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
-              return (
-                <div className="mb-8" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-8 py-3 rounded-full text-xl font-bold flex items-center gap-3 mb-6 mx-auto w-fit">
-                    <Send className="w-6 h-6" /> Step 3
+                  
+                  <div style={{ opacity: interpolate(pTag, [0, 1], [0, 1]) }}>
+                    <p className="text-2xl font-medium text-zinc-400">Turn outreach into real opportunities.</p>
                   </div>
-                  <h2 className="text-7xl font-black text-white text-center tracking-tight">Sends on autopilot</h2>
-                </div>
-              );
-            })()}
-
-            <GradientBorderCard frame={frame} className="w-[1000px]">
-              <div className="p-8">
-                {[
-                  { name: "Sarah Chen", status: "Sent", time: "2m ago", color: "emerald", delay: 15 },
-                  { name: "James Wilson", status: "Sent", time: "4m ago", color: "emerald", delay: 28 },
-                  { name: "Priya Sharma", status: "Sending", time: "Now", color: "blue", delay: 42 },
-                  { name: "Alex Rivera", status: "Queued", time: "In 8m", color: "zinc", delay: 56 },
-                  { name: "Maria Santos", status: "Queued", time: "In 16m", color: "zinc", delay: 70 },
-                ].map((item, i) => {
-                  const lf = frame - 930;
-                  const p = spring({ frame: lf - item.delay, fps, config: { damping: 14 } });
-                  const colors: Record<string, { bg: string; text: string; glow: string }> = {
-                    emerald: { bg: "bg-emerald-500/20", text: "text-emerald-400", glow: "drop-shadow(0 0 6px rgba(52,211,153,0.5))" },
-                    blue: { bg: "bg-blue-500/20", text: "text-blue-400", glow: "drop-shadow(0 0 6px rgba(59,130,246,0.5))" },
-                    zinc: { bg: "bg-white/5", text: "text-zinc-500", glow: "none" },
-                  };
-                  const c = colors[item.color];
-                  return (
-                    <div
-                      key={i}
-                      className="flex items-center py-5 border-b border-white/5 last:border-0"
-                      style={{
-                        opacity: interpolate(p, [0, 1], [0, 1]),
-                        transform: `translateY(${interpolate(p, [0, 1], [20, 0])}px)`,
-                      }}
-                    >
-                      <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black text-lg mr-5">
-                        {item.name[0]}
-                      </div>
-                      <span className="text-2xl font-bold text-white flex-1">{item.name}</span>
-                      <span className={`text-lg font-bold px-5 py-2 rounded-full mr-5 ${c.bg} ${c.text}`} style={{ filter: c.glow }}>
-                        {item.status === "Sent" && "✓ "}{item.status}
-                      </span>
-                      <span className="text-lg text-zinc-500 w-24 text-right">{item.time}</span>
-                      <Shield className="w-5 h-5 text-emerald-500/50 ml-4" />
-                    </div>
-                  );
-                })}
-              </div>
-            </GradientBorderCard>
-
-            {(() => {
-              const lf = frame - 930;
-              const p = spring({ frame: lf - 80, fps, config: { damping: 14 } });
-              return (
-                <p className="text-xl text-zinc-500 font-medium flex items-center gap-3 mt-6" style={{ opacity: interpolate(p, [0, 1], [0, 1]) }}>
-                  <Shield className="w-5 h-5 text-emerald-500" /> Paced perfectly. Your domain stays safe.
-                </p>
+                </>
               );
             })()}
           </div>
         </Scene>
       </Sequence>
-
-      {/* ═══ SCENE 8: ANALYTICS ═══ (911–1050) */}
-      <Sequence from={1076} durationInFrames={139}>
-        <Audio src={staticFile("audio/s08.m4a")} />
-        <Scene frame={frame} fps={fps} from={1076} dur={139} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
-          <GradientOrb x={50} y={30} size={500} color1="rgba(99,102,241,0.15)" color2="transparent" frame={frame} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
-            {(() => {
-              const lf = frame - 1076;
-              const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
-              return (
-                <h2 className="text-7xl font-black text-white text-center tracking-tight mb-12" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
-                  Track <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">everything</span>
-                </h2>
-              );
-            })()}
-
-            <div className="grid grid-cols-3 gap-8 w-[1200px]">
-              {[
-                { label: "Emails Sent", value: 8402, icon: <Mail className="w-8 h-8" />, color: "indigo", growth: "+12%", ringPct: 84, delay: 15 },
-                { label: "Open Rate", value: 67.3, suffix: "%", icon: <TrendingUp className="w-8 h-8" />, color: "purple", growth: "+8%", ringPct: 67, delay: 30 },
-                { label: "Meetings Booked", value: 142, icon: <Target className="w-8 h-8" />, color: "emerald", growth: "+23%", ringPct: 92, delay: 45 },
-              ].map((stat, i) => {
-                const lf = frame - 1076;
-                const p = spring({ frame: lf - stat.delay, fps, config: { damping: 12 } });
-                const countUp = interpolate(lf, [stat.delay, stat.delay + 60], [0, stat.value], { extrapolateRight: "clamp" });
-                const ringUp = interpolate(lf, [stat.delay + 10, stat.delay + 50], [0, stat.ringPct], { extrapolateRight: "clamp" });
-                const glowColors: Record<string, string> = { indigo: "rgba(99,102,241,0.2)", purple: "rgba(168,85,247,0.2)", emerald: "rgba(52,211,153,0.2)" };
-                const strokeColors: Record<string, string> = { indigo: "#6366f1", purple: "#a855f7", emerald: "#34d399" };
-
-                return (
-                  <GlassCard
-                    key={i}
-                    className="p-8"
-                    glow={glowColors[stat.color]}
-                    style={{
-                      opacity: interpolate(p, [0, 1], [0, 1]),
-                      transform: `translateY(${interpolate(p, [0, 1], [40, 0])}px) scale(${interpolate(p, [0, 1], [0.9, 1])})`,
-                    }}
-                  >
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="relative">
-                        <ProgressRing progress={ringUp} size={70} strokeWidth={5} color={strokeColors[stat.color]} />
-                        <div className="absolute inset-0 flex items-center justify-center text-white/80">{stat.icon}</div>
-                      </div>
-                      <span className="text-emerald-400 font-bold text-lg flex items-center gap-1">
-                        <ArrowUpRight className="w-4 h-4" />{stat.growth}
-                      </span>
-                    </div>
-                    <p className="text-lg text-zinc-500 font-medium mb-2">{stat.label}</p>
-                    <p className="text-5xl font-black text-white">
-                      {stat.suffix ? countUp.toFixed(1) : Math.floor(countUp).toLocaleString()}{stat.suffix || ""}
-                    </p>
-                  </GlassCard>
-                );
-              })}
-            </div>
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 9: USE CASES ═══ (1050–1180) */}
-      <Sequence from={1215} durationInFrames={130}>
-        <Audio src={staticFile("audio/s09.m4a")} />
-        <Scene frame={frame} fps={fps} from={1215} dur={130} bg="bg-zinc-950">
-          <DotGrid frame={frame} color="rgba(99,102,241,0.06)" speed={0.3} />
-          <GradientOrb x={40} y={60} size={500} color1="rgba(99,102,241,0.15)" color2="rgba(168,85,247,0.1)" frame={frame} />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-20">
-            {(() => {
-              const lf = frame - 1215;
-              const headerP = spring({ frame: lf, fps, config: { damping: 14 } });
-              return (
-                <h2 className="text-7xl font-black text-white text-center tracking-tight mb-14" style={{ opacity: interpolate(headerP, [0, 1], [0, 1]) }}>
-                  Built for people who{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">move fast</span>
-                </h2>
-              );
-            })()}
-
-            <div className="grid grid-cols-3 gap-10 w-[1200px]">
-              {[
-                { icon: <Zap className="w-12 h-12" />, title: "Founders", desc: "Close your first 100 customers", delay: 12 },
-                { icon: <Target className="w-12 h-12" />, title: "Sales Teams", desc: "10x your outbound pipeline", delay: 26 },
-                { icon: <Users className="w-12 h-12" />, title: "Recruiters", desc: "Fill roles 3x faster", delay: 40 },
-              ].map((item, i) => {
-                const lf = frame - 1215;
-                const p = spring({ frame: lf - item.delay, fps, config: { damping: 12 } });
-                return (
-                  <GlassCard
-                    key={i}
-                    className="p-10 text-center"
-                    glow="rgba(99,102,241,0.1)"
-                    style={{
-                      opacity: interpolate(p, [0, 1], [0, 1]),
-                      transform: `translateY(${interpolate(p, [0, 1], [50, 0])}px) scale(${interpolate(p, [0, 1], [0.85, 1])})`,
-                    }}
-                  >
-                    <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 text-indigo-400 p-5 rounded-2xl inline-block mb-6">
-                      {item.icon}
-                    </div>
-                    <h3 className="text-3xl font-bold text-white mb-3">{item.title}</h3>
-                    <p className="text-xl text-zinc-400 font-medium">{item.desc}</p>
-                  </GlassCard>
-                );
-              })}
-            </div>
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 10: 100% FREE ═══ (1180–1297) */}
-      <Sequence from={1345} durationInFrames={117}>
-        <Audio src={staticFile("audio/s10.m4a")} />
-        <Scene frame={frame} fps={fps} from={1345} dur={117}>
-          <GradientOrb x={30} y={40} size={600} color1="rgba(99,102,241,0.4)" color2="rgba(168,85,247,0.2)" frame={frame} />
-          <GradientOrb x={70} y={60} size={500} color1="rgba(168,85,247,0.3)" color2="transparent" frame={frame} delay={30} />
-          <DotGrid frame={frame} color="rgba(255,255,255,0.04)" speed={0.5} />
-
-          <div className="absolute inset-0 flex items-center justify-center">
-            {(() => {
-              const p = spring({ frame: frame - 1345, fps, config: { damping: 10 } });
-              return (
-                <div className="text-center" style={{ transform: `scale(${interpolate(p, [0, 1], [0.3, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
-                  <p className="text-4xl text-indigo-300 font-bold mb-8">And right now?</p>
-                  <h2
-                    className="text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 leading-none"
-                    style={{ textShadow: "0 0 80px rgba(99,102,241,0.3)" }}
-                  >
-                    100% Free
-                  </h2>
-                  <p className="text-3xl text-zinc-400 font-medium mt-8">for early users</p>
-                </div>
-              );
-            })()}
-          </div>
-        </Scene>
-      </Sequence>
-
-      {/* ═══ SCENE 11: EXIT CTA ═══ (1297–1373) */}
-      <Sequence from={1462} durationInFrames={76}>
-        <Audio src={staticFile("audio/s11.m4a")} />
-        <Scene frame={frame} fps={fps} from={1462} dur={76}>
-          <GradientOrb x={50} y={50} size={800} color1="rgba(99,102,241,0.2)" color2="transparent" frame={frame} />
-          <DotGrid frame={frame} color="rgba(99,102,241,0.05)" speed={0.4} />
-
-          <div className="absolute inset-0 flex items-center justify-center">
-            {(() => {
-              const p = spring({ frame: frame - 1462, fps, config: { damping: 10 } });
-              return (
-                <div className="flex flex-col items-center" style={{ transform: `scale(${interpolate(p, [0, 1], [0.5, 1])})`, opacity: interpolate(p, [0, 1], [0, 1]) }}>
-                  <div className="flex items-center gap-5 mb-10">
-                    <div
-                      className="rounded-2xl overflow-hidden bg-black"
-                      style={{ width: 80, height: 80, boxShadow: "0 0 60px rgba(99,102,241,0.4)" }}
-                    >
-                      <Img src={staticFile("logo.jpg")} className="w-full h-full object-cover" />
-                    </div>
-                    <span className="text-6xl font-bold text-white tracking-tight">Doodle</span>
-                  </div>
-                  <h2 className="text-8xl font-black text-white mb-10">
-                    Be early.{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Build bigger.</span>
-                  </h2>
-                  <GlassCard className="px-12 py-6" glow="rgba(99,102,241,0.2)">
-                    <p className="text-3xl font-medium text-white tracking-wide">doodle.com</p>
-                  </GlassCard>
-                </div>
-              );
-            })()}
-          </div>
-        </Scene>
-      </Sequence>
-
+      
     </AbsoluteFill>
   );
 };
