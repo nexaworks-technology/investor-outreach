@@ -38,24 +38,60 @@ export function interpolateVariables(text: string, context: GenerationContext) {
     .replace(/{{investor_name}}/ig, context.investorName || "")
     .replace(/{{investorName}}/ig, context.investorName || "")
     .replace(/{{investor\.name}}/ig, context.investorName || "")
-    .replace(/{{firm_name}}/ig, context.investorFirm || "")
-    .replace(/{{investorFirm}}/ig, context.investorFirm || "")
-    .replace(/{{investor\.firm}}/ig, context.investorFirm || "")
-    .replace(/{{investor\.stagePreference}}/ig, context.investorStagePreference || "")
     .replace(/{{company_name}}/ig, context.companyName || "")
     .replace(/{{companyName}}/ig, context.companyName || "")
-    .replace(/{{company\.name}}/ig, context.companyName || "")
-    .replace(/{{oneLinePitch}}/ig, context.oneLinePitch || "")
+    .replace(/{{sender_name}}/ig, context.senderName || "")
     .replace(/{{senderName}}/ig, context.senderName || "")
-    .replace(/{{sender\.name}}/ig, context.senderName || "")
-    .replace(/{{ai_hook}}\n*/ig, "");
+    .replace(/{{firm_name}}/ig, context.investorFirm || "")
+    .replace(/{{investorFirm}}/ig, context.investorFirm || "");
 }
 
 function fallbackReplace(context: GenerationContext) {
-  const subject = interpolateVariables(context.baseSubjectTemplate, context);
-  const body = interpolateVariables(context.baseBodyTemplate, context);
-  return { subject, body };
+  return {
+    subject: interpolateVariables(context.baseSubjectTemplate, context),
+    body: interpolateVariables(context.baseBodyTemplate.replace(/{{ai_hook}}\n*/ig, ""), context)
+  };
 }
+
+interface ProviderConfig {
+  provider: 'zai' | 'groq' | 'gemini';
+  apiKey: string;
+  model: string;
+  baseURL?: string;
+}
+
+function getAvailableProviders(): ProviderConfig[] {
+  const providers: ProviderConfig[] = [];
+  
+  // Z.AI
+  if (process.env.ZAI_API_KEY) {
+    const keys = process.env.ZAI_API_KEY.split(',').map(k => k.trim());
+    for (const key of keys) {
+      if (key) providers.push({ provider: 'zai', apiKey: key, model: 'glm-4.7-flash', baseURL: 'https://api.z.ai/api/paas/v4/' });
+    }
+  }
+
+  // Groq
+  if (process.env.GROQ_API_KEYS || process.env.GROQ_API_KEY) {
+    const keysString = process.env.GROQ_API_KEYS || process.env.GROQ_API_KEY || "";
+    const keys = keysString.split(',').map(k => k.trim());
+    for (const key of keys) {
+      if (key) providers.push({ provider: 'groq', apiKey: key, model: 'openai/gpt-oss-120b', baseURL: 'https://api.groq.com/openai/v1' });
+    }
+  }
+
+  // Gemini
+  if (process.env.GEMINI_API_KEY) {
+    const keys = process.env.GEMINI_API_KEY.split(',').map(k => k.trim());
+    for (const key of keys) {
+      if (key) providers.push({ provider: 'gemini', apiKey: key, model: 'gemini-2.5-flash' });
+    }
+  }
+
+  // Shuffle for load balancing
+  return providers.sort(() => Math.random() - 0.5);
+}
+
 
 export async function generatePersonalizedEmail(
   apiKeys: string[],
@@ -71,37 +107,23 @@ export async function generatePersonalizedEmail(
     );
     return fallbackReplace({ ...context, baseBodyTemplate: modifiedTemplate });
   }
-  let keysToUse = apiKeys;
-  
-  if (!keysToUse || keysToUse.length === 0) {
-    if (process.env.ZAI_API_KEY) {
-      keysToUse = process.env.ZAI_API_KEY.split(',').map(k => k.trim());
-      provider = "zai";
-    } else if (process.env.GROQ_API_KEYS) {
-      keysToUse = process.env.GROQ_API_KEYS.split(',').map(k => k.trim());
-      provider = "groq";
-    } else if (process.env.GROQ_API_KEY) {
-      keysToUse = [process.env.GROQ_API_KEY];
-      provider = "groq";
-    }
-  }
 
-  if (!keysToUse || keysToUse.length === 0) {
+  const providersToUse = getAvailableProviders();
+
+  if (providersToUse.length === 0) {
     return fallbackReplace(context);
   }
 
-  // Shuffle keys to load-balance across all available keys
-  keysToUse = [...keysToUse].sort(() => Math.random() - 0.5);
+  const systemInstruction = context.systemPrompt || `You are an elite B2B sales copywriter writing a highly personalized cold email hook.
+Your ONLY job is to generate a personalized opening line/hook based on the lead's profile.
+Do NOT write the entire email. Only write the hook.
 
-  const systemInstruction = context.systemPrompt || `You are an expert sales and outbound professional writing a highly personalized email.
-Your primary goal is to generate a powerful, context-fit personalization hook (1-2 sentences) and inject it into the base template exactly where the {{ai_hook}} variable is.
-
-CURRENT OUTREACH GUIDANCE RULES:
-1. Focus on relevant business context, not fake flattery. Use their company details, sector focus, recent milestones, or portfolio.
-2. Establish why their specific context makes them highly relevant to your product/company.
-3. Keep the ENTIRE REST OF THE BASE TEMPLATE EXACTLY AS WRITTEN. Do not change the core pitch, traction points, or call-to-action (CTA). 
-4. Replace the {{ai_hook}} variable in the template with your generated hook.
-5. If the {{ai_hook}} variable is NOT present in the template, insert your hook naturally at the beginning of the body.
+Rules:
+1. The hook must be exactly 1-2 short sentences.
+2. It must be highly personalized using the provided LEAD PROFILE data (e.g., recent milestones, portfolio companies, sector focus).
+3. If no specific personalized data is available, write a strong, concise, generic opening relevant to their sector.
+4. Do NOT use placeholder variables like [Company Name].
+5. Do NOT start with "Hi" or "Dear" (that is handled by the template).
 6. Make it sound natural, concise, and professional (not robotic).
 7. Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`;
 
@@ -134,25 +156,22 @@ Return the final subject and body strictly as JSON.`;
 
   let lastError: any = null;
 
-  for (let i = 0; i < keysToUse.length; i++) {
-    const apiKey = keysToUse[i];
+  for (let i = 0; i < providersToUse.length; i++) {
+    const config = providersToUse[i];
     try {
-      console.log(`[AI Gen] Trying ${provider} API Key ${i + 1}/${keysToUse.length}...`);
+      console.log(`[AI Gen] Trying ${config.provider} API Key ${i + 1}/${providersToUse.length}...`);
       
       let subject = "";
       let body = "";
 
-      if (provider === "groq" || provider === "zai") {
-        const baseURL = provider === "zai" ? "https://api.z.ai/api/paas/v4/" : "https://api.groq.com/openai/v1";
-        const defaultModel = provider === "zai" ? "glm-4.7-flash" : "openai/gpt-oss-120b";
-        
+      if (config.provider === "groq" || config.provider === "zai") {
         const openai = new OpenAI({
-          apiKey,
-          baseURL
+          apiKey: config.apiKey,
+          baseURL: config.baseURL
         });
 
         const response = await openai.chat.completions.create({
-          model: model || defaultModel,
+          model: config.model,
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt }
@@ -177,12 +196,11 @@ Return the final subject and body strictly as JSON.`;
         subject = parsed.subject;
         body = parsed.body;
 
-      } else {
-        // Fallback to Gemini
-        const ai = new GoogleGenAI({ apiKey });
+      } else if (config.provider === "gemini") {
+        const ai = new GoogleGenAI({ apiKey: config.apiKey });
         
         const response = await ai.models.generateContent({
-          model: model || 'gemini-2.5-flash',
+          model: config.model,
           contents: userPrompt,
           config: {
             systemInstruction,
@@ -208,7 +226,7 @@ Return the final subject and body strictly as JSON.`;
 
       if (!subject || !body) throw new Error("Invalid schema returned");
       
-      console.log(`[AI Gen] Success using Key ${i + 1}`);
+      console.log(`[AI Gen] Success using ${config.provider}`);
       return { 
         subject: interpolateVariables(subject, context), 
         body: interpolateVariables(body, context) 
@@ -218,15 +236,15 @@ Return the final subject and body strictly as JSON.`;
       lastError = error;
       const msg = error.message || String(error);
       if (msg.includes('429') || error.status === 429) {
-        console.warn(`[AI Gen] Key ${i + 1} rate limited. Moving to next...`);
+        console.warn(`[AI Gen] ${config.provider} rate limited. Moving to next...`);
         continue;
       }
-      console.warn(`[AI Gen] Key ${i + 1} failed: ${msg}. Moving to next...`);
+      console.warn(`[AI Gen] ${config.provider} failed: ${msg}. Moving to next...`);
       continue;
     }
   }
 
-  console.error("[AI Gen] All keys failed. Falling back to basic replace.", lastError);
+  console.error("[AI Gen] All providers failed. Falling back to basic replace.", lastError);
   return fallbackReplace(context);
 }
 
@@ -236,28 +254,12 @@ export async function classifyEmailReply(
   provider: string = "zai",
   model: string = "glm-4.7-flash"
 ): Promise<{ classification: string, suggestedResponse: string }> {
-  let keysToUse = apiKeys;
-  
-  if (!keysToUse || keysToUse.length === 0) {
-    if (process.env.ZAI_API_KEY) {
-      keysToUse = process.env.ZAI_API_KEY.split(',').map(k => k.trim());
-      provider = "zai";
-    } else if (process.env.GROQ_API_KEYS) {
-      keysToUse = process.env.GROQ_API_KEYS.split(',').map(k => k.trim());
-      provider = "groq";
-    } else if (process.env.GROQ_API_KEY) {
-      keysToUse = [process.env.GROQ_API_KEY];
-      provider = "groq";
-    }
-  }
+  const providersToUse = getAvailableProviders();
 
-  if (!keysToUse || keysToUse.length === 0) {
+  if (providersToUse.length === 0) {
     console.warn("[AI Triage] No API keys configured. Falling back to UNKNOWN.");
     return { classification: "UNKNOWN", suggestedResponse: "" };
   }
-
-  // Shuffle keys to load-balance (round-robin) across all available keys
-  keysToUse = [...keysToUse].sort(() => Math.random() - 0.5);
 
   const systemInstruction = `You are an AI assistant analyzing an incoming email reply from a venture capital investor.
 Your goal is to classify the intent of the reply into exactly ONE of these categories:
@@ -280,16 +282,13 @@ Output MUST be valid JSON containing exactly two keys: 'classification' (string,
 
   let lastError: any = null;
 
-  for (let i = 0; i < keysToUse.length; i++) {
-    const apiKey = keysToUse[i];
+  for (let i = 0; i < providersToUse.length; i++) {
+    const config = providersToUse[i];
     try {
-      if (provider === "groq" || provider === "zai") {
-        const baseURL = provider === "zai" ? "https://api.z.ai/api/paas/v4/" : "https://api.groq.com/openai/v1";
-        const defaultModel = provider === "zai" ? "glm-4.7-flash" : "openai/gpt-oss-120b";
-        
-        const openai = new OpenAI({ apiKey, baseURL });
+      if (config.provider === "groq" || config.provider === "zai") {
+        const openai = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL });
         const response = await openai.chat.completions.create({
-          model: model || defaultModel,
+          model: config.model,
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt }
@@ -311,10 +310,10 @@ Output MUST be valid JSON containing exactly two keys: 'classification' (string,
         }
         
         return { classification: parsed.classification, suggestedResponse: parsed.suggestedResponse || "" };
-      } else {
-        const ai = new GoogleGenAI({ apiKey });
+      } else if (config.provider === "gemini") {
+        const ai = new GoogleGenAI({ apiKey: config.apiKey });
         const response = await ai.models.generateContent({
-          model: model || 'gemini-2.5-flash',
+          model: config.model,
           contents: userPrompt,
           config: {
             systemInstruction,
