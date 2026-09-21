@@ -24,7 +24,8 @@ export function SmtpConnectDialog({ onConnect }: { onConnect: () => void }) {
     smtpPassword: "",
   });
 
-  const handleProviderChange = (val: string) => {
+  const handleProviderChange = (val: string | null) => {
+    if (!val) return;
     setProvider(val);
     if (val === "gmail") {
       setFormData(p => ({ ...p, smtpHost: "smtp.gmail.com", smtpPort: "465" }));

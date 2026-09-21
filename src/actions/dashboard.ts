@@ -166,6 +166,6 @@ export async function getDashboardData() {
     recentActivity,
     upcomingFollowUps,
     campaignMetrics,
-    dailyStats,
+    dailyStats: Object.values(dailyStatsMap),
   };
 }
