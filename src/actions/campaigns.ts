@@ -52,6 +52,14 @@ export async function getCampaigns() {
       },
       mailbox: { select: { email: true, displayName: true } },
       sequenceSteps: { orderBy: { order: "asc" } },
+      campaignInvestors: {
+        select: {
+          id: true,
+          emailMessages: {
+            select: { status: true }
+          }
+        }
+      }
     },
     orderBy: { createdAt: "desc" },
   });

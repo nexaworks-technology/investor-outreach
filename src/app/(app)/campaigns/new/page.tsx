@@ -116,13 +116,13 @@ export default function NewCampaignPage() {
       await launchCampaign(res.id);
       
       toast.success('Campaign launched successfully');
-      router.push(`/campaigns/${res.id}`); // Real routing
+      router.push('/campaigns');
+      // Intentionally not setting isSubmitting(false) here so the loading state stays visible
+      // during the Next.js route transition.
     } catch (error: any) {
       console.error("Launch Error:", error);
       toast.error(`Failed to launch campaign: ${error?.message || 'Unknown error'}`);
-    } finally {
       setIsSubmitting(false);
-      setIsLaunchDialogOpen(false);
     }
   };
 
