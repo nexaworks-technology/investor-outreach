@@ -50,7 +50,7 @@ export function TemplateEditor({
   const [name, setName] = useState(initialData?.name || "Cold Outreach - Standard");
   const [type, setType] = useState(initialData?.type || "initial");
   const [subject, setSubject] = useState(initialData?.subject || "Introduction: {{companyName}}");
-  const [body, setBody] = useState(initialData?.body || "Hi {{firstName}},\n\nI saw your recent investment in {{recentInvestment}} and thought you might be interested in what we're building at {{companyName}}.\n\n{{oneLinePitch}}\n\nWould you be open to a brief chat next week?\n\nBest,\n{{senderName}}");
+  const [body, setBody] = useState(initialData?.body || "Hi {{firstName}},\n\n{{ai_hook}}\n\nI thought you might be interested in what we're building at {{companyName}}.\n\n{{oneLinePitch}}\n\nWould you be open to a brief chat next week?\n\nBest,\n{{senderName}}");
   const [attachments, setAttachments] = useState<string[]>(initialData?.attachments || []);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -67,7 +67,7 @@ export function TemplateEditor({
       setName("Cold Outreach - Standard");
       setType("initial");
       setSubject("Introduction: {{companyName}}");
-      setBody("Hi {{firstName}},\n\nI saw your recent investment in {{recentInvestment}} and thought you might be interested in what we're building at {{companyName}}.\n\n{{oneLinePitch}}\n\nWould you be open to a brief chat next week?\n\nBest,\n{{senderName}}");
+      setBody("Hi {{firstName}},\n\n{{ai_hook}}\n\nI thought you might be interested in what we're building at {{companyName}}.\n\n{{oneLinePitch}}\n\nWould you be open to a brief chat next week?\n\nBest,\n{{senderName}}");
       setAttachments([]);
     }
   }, [initialData]);

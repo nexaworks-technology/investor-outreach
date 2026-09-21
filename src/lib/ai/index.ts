@@ -45,7 +45,7 @@ export function interpolateVariables(text: string, context: GenerationContext) {
     .replace(/{{senderName}}/ig, context.senderName || "")
     .replace(/{{firm_name}}/ig, context.investorFirm || "")
     .replace(/{{investorFirm}}/ig, context.investorFirm || "")
-    .replace(/{{recentInvestment}}/ig, context.portfolioCompanies || "your recent investments")
+    .replace(/{{recentInvestment}}/ig, context.portfolioCompanies || context.investorThesis || "the space")
     .replace(/{{oneLinePitch}}/ig, context.oneLinePitch || "");
 }
 
@@ -125,10 +125,11 @@ Rules:
 1. The hook must be exactly 1-2 short sentences.
 2. It must be highly personalized using the provided LEAD PROFILE data (e.g., recent milestones, portfolio companies, sector focus).
 3. If no specific personalized data is available, write a strong, concise, generic opening relevant to their sector.
-4. Do NOT use placeholder variables like [Company Name].
+4. Do NOT use placeholder variables like [Company Name] in the hook.
 5. Do NOT start with "Hi" or "Dear" (that is handled by the template).
-6. Make it sound natural, concise, and professional (not robotic).
-7. Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`;
+6. Do NOT modify any existing template variables (like {{firstName}}, {{companyName}}, {{oneLinePitch}}). Leave them EXACTLY as they appear in the BASE EMAIL TEMPLATE.
+7. Make it sound natural, concise, and professional (not robotic).
+8. Output MUST be valid JSON containing exactly two keys: 'subject' (string) and 'body' (string).`;
 
   const userPrompt = `
 LEAD / CONTACT PROFILE:
@@ -152,10 +153,9 @@ Subject: ${context.baseSubjectTemplate}
 Body: 
 ${context.baseBodyTemplate}
 
-INSTRUCTIONS: 
-Generate a relevant, personalized opening hook based on the LEAD PROFILE. 
-Insert it into the Body replacing the {{ai_hook}} variable, but LEAVE THE REST OF THE TEMPLATE EXACTLY INTACT.
-Return the final subject and body strictly as JSON.`;
+      INSTRUCTIONS: 
+      Generate a relevant, personalized opening hook based on the LEAD PROFILE.
+      Return the final subject and the generated hook strictly as JSON.`;
 
   let lastError: any = null;
 
@@ -165,7 +165,7 @@ Return the final subject and body strictly as JSON.`;
       console.log(`[AI Gen] Trying ${config.provider} API Key ${i + 1}/${providersToUse.length}...`);
       
       let subject = "";
-      let body = "";
+      let hook = "";
 
       if (config.provider === "groq" || config.provider === "zai") {
         const openai = new OpenAI({
@@ -197,7 +197,7 @@ Return the final subject and body strictly as JSON.`;
         }
         
         subject = parsed.subject;
-        body = parsed.body;
+        hook = parsed.hook || parsed.body || "";
 
       } else if (config.provider === "gemini") {
         const ai = new GoogleGenAI({ apiKey: config.apiKey });
@@ -212,9 +212,9 @@ Return the final subject and body strictly as JSON.`;
               type: Type.OBJECT,
               properties: {
                 subject: { type: Type.STRING, description: "The personalized email subject line" },
-                body: { type: Type.STRING, description: "The personalized email body" }
+                hook: { type: Type.STRING, description: "The 1-2 sentence personalized opening hook" }
               },
-              required: ['subject', 'body']
+              required: ['subject', 'hook']
             }
           }
         });
@@ -224,15 +224,17 @@ Return the final subject and body strictly as JSON.`;
         
         const parsed = JSON.parse(text);
         subject = parsed.subject;
-        body = parsed.body;
+        hook = parsed.hook || parsed.body || "";
       }
 
-      if (!subject || !body) throw new Error("Invalid schema returned");
+      if (!subject || !hook) throw new Error("Invalid schema returned");
+      
+      const finalBody = context.baseBodyTemplate.replace(/{{ai_hook}}\n*/ig, hook + "\n\n");
       
       console.log(`[AI Gen] Success using ${config.provider}`);
       return { 
         subject: interpolateVariables(subject, context), 
-        body: interpolateVariables(body, context) 
+        body: interpolateVariables(finalBody, context) 
       };
       
     } catch (error: any) {
