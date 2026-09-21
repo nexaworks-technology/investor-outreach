@@ -41,7 +41,7 @@ export default async function LoginPage({
           </div>
         )}
 
-        <form className="space-y-4">
+        <form action={login} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -62,7 +62,7 @@ export default async function LoginPage({
             />
           </div>
           <div className="flex flex-col gap-4 pt-2">
-            <SubmitButton formAction={login} className="w-full">
+            <SubmitButton className="w-full">
               Sign In
             </SubmitButton>
             <div className="text-center text-sm text-zinc-500">
