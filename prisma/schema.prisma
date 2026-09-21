@@ -327,6 +327,8 @@ model Campaign {
   filterFirms        String[]
   filterRelationship String[]
   excludeInvestorIds String[]
+  excludeContacted   Boolean            @default(true)
+
   dailySendLimit     Int?
   sendWindowStart    String?
   sendWindowEnd      String?

@@ -18,6 +18,7 @@ const campaignSchema = z.object({
   filterFirms: z.array(z.string()).optional(),
   filterRelationship: z.array(z.string()).optional(),
   excludeInvestorIds: z.array(z.string()).optional(),
+  excludeContacted: z.boolean().optional(),
   dailySendLimit: z.number().min(1).max(100).optional(),
   sendWindowStart: z.string().optional(),
   sendWindowEnd: z.string().optional(),
@@ -161,6 +162,9 @@ export async function createCampaign(data: z.infer<typeof campaignSchema>) {
   if (validated.filterStages && validated.filterStages.length > 0) {
     whereArgs.stagePreference = { in: validated.filterStages };
   }
+  if (validated.excludeContacted !== false) { // Default to true if undefined
+    whereArgs.campaignInvestors = { none: {} };
+  }
 
   const matchingInvestors = await db.investor.findMany({
     where: whereArgs,
@@ -197,6 +201,7 @@ export async function getTargetingCount(filters: {
   filterStages?: string[];
   filterGeography?: string[];
   filterThesis?: string[];
+  excludeContacted?: boolean;
 }) {
   const workspaceId = await getWorkspaceId();
   
@@ -206,6 +211,9 @@ export async function getTargetingCount(filters: {
   }
   if (filters.filterStages && filters.filterStages.length > 0) {
     whereArgs.stagePreference = { in: filters.filterStages };
+  }
+  if (filters.excludeContacted) {
+    whereArgs.campaignInvestors = { none: {} };
   }
   // Other filters can be added here
 

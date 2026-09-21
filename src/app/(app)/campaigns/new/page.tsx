@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { FileEdit, Eye, Zap, ArrowLeft, ArrowRight, Plus, Trash2, Clock, Mail, Users, Check, Target, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -76,6 +77,7 @@ export default function NewCampaignPage() {
     description: '',
     mode: 'REVIEW_BEFORE_SEND',
     investorCount: 0, // Mock for targeting step
+    excludeContacted: true,
     sequence: [
       { id: '1', type: 'INITIAL', delay: 0, templateId: null, requireApproval: true }
     ],
@@ -251,6 +253,17 @@ export default function NewCampaignPage() {
                 </div>
                 
                 <div className="mt-8 pt-8 border-t border-border/50 flex flex-col items-center">
+                  <div className="flex items-center space-x-2 mb-6 p-4 rounded-lg border bg-card/50">
+                    <Switch 
+                      id="exclude-contacted" 
+                      checked={formData.excludeContacted}
+                      onCheckedChange={(checked) => updateForm('excludeContacted', checked)}
+                    />
+                    <Label htmlFor="exclude-contacted" className="font-normal cursor-pointer">
+                      Exclude investors that are already in another campaign
+                    </Label>
+                  </div>
+                  
                   <div className="text-4xl font-bold text-foreground">
                     {formData.investorCount || 0}
                   </div>
@@ -265,7 +278,9 @@ export default function NewCampaignPage() {
                       setIsCalculating(true);
                       try {
                         // Pass empty filters for now to get all workspace investors
-                        const count = await getTargetingCount({});
+                        const count = await getTargetingCount({
+                          excludeContacted: formData.excludeContacted
+                        });
                         updateForm('investorCount', count);
                         toast.success(`Found ${count} matching investors`);
                       } catch (error) {
