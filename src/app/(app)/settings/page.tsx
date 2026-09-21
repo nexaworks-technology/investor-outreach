@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Building, Mail, Sliders, Cpu, Shield, Save, CheckCircle2, Plus } from "lucide-react";
 import { getMailboxes, disconnectMailbox, getGoogleAuthUrl } from "@/actions/mailbox";
 import { SmtpConnectDialog } from "@/components/mailboxes/smtp-connect-dialog";
+import { BetaRequestDialog } from "@/components/mailbox/beta-request-dialog";
 import { AISettings } from "@/components/settings/ai-settings";
 import { SendingSettings } from "@/components/settings/sending-settings";
 import { useEffect, useState } from "react";
@@ -30,17 +31,6 @@ export default function SettingsPage() {
       console.error(error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleConnectGoogle = async () => {
-    try {
-      setIsConnecting(true);
-      const url = await getGoogleAuthUrl("settings");
-      window.location.href = url;
-    } catch (error) {
-      toast.error("Failed to generate connect URL");
-      setIsConnecting(false);
     }
   };
 
@@ -88,9 +78,11 @@ export default function SettingsPage() {
               </div>
               <div className="flex gap-2">
                 <SmtpConnectDialog onConnect={loadMailboxes} />
-                <Button onClick={handleConnectGoogle} disabled={isConnecting} className="gap-2">
-                  <Plus className="h-4 w-4" /> {isConnecting ? "Redirecting..." : "Connect Google Workspace"}
-                </Button>
+                <BetaRequestDialog>
+                  <Button variant="outline" className="gap-2">
+                    <Plus className="h-4 w-4" /> Request Google Inbox Beta Access
+                  </Button>
+                </BetaRequestDialog>
               </div>
             </div>
             
@@ -101,9 +93,14 @@ export default function SettingsPage() {
                 <Mail className="h-8 w-8 mx-auto text-muted-foreground mb-3 opacity-50" />
                 <h4 className="font-medium">No mailboxes connected</h4>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">Connect a mailbox to start sending outreach campaigns.</p>
-                <Button onClick={handleConnectGoogle} disabled={isConnecting} variant="outline">
-                  Connect Account
-                </Button>
+                <div className="flex justify-center gap-2">
+                  <SmtpConnectDialog onConnect={loadMailboxes} />
+                  <BetaRequestDialog>
+                    <Button variant="outline">
+                      Google Inbox (Request Beta Access)
+                    </Button>
+                  </BetaRequestDialog>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">

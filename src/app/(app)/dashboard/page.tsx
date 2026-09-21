@@ -34,11 +34,13 @@ export default async function DashboardPage() {
                 Import Leads
               </Button>
             </Link>
-            <Link href="/settings">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Connect Email
-              </Button>
-            </Link>
+            {!data.hasMailbox && (
+              <Link href="/settings">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                  Connect Email
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       );

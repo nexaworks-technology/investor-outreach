@@ -13,7 +13,7 @@ import { investorSchema } from '@/lib/validations/investors';
 import { z } from 'zod';
 import { Textarea } from '@/components/ui/textarea';
 
-export function AddInvestorDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function AddInvestorDialog({ open, onOpenChange, onAddSuccess }: { open: boolean; onOpenChange: (open: boolean) => void; onAddSuccess?: () => void }) {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof investorSchema>>({
@@ -38,6 +38,7 @@ export function AddInvestorDialog({ open, onOpenChange }: { open: boolean; onOpe
       toast.success('Investor added successfully');
       onOpenChange(false);
       form.reset();
+      if (onAddSuccess) onAddSuccess();
     } catch (error: any) {
       toast.error(error.message || 'Failed to add investor');
     } finally {

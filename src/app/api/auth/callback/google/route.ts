@@ -3,7 +3,6 @@ import { auth } from '@/lib/auth';
 import { db } from "@/lib/db";
 import { gmailProvider } from "@/lib/email/gmail";
 import { encrypt } from "@/lib/encryption";
-import { getOnboardingStatus } from "@/actions/company";
 
 export async function GET(req: NextRequest) {
   try {
@@ -93,15 +92,13 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Check if we are in onboarding
-    const status = await getOnboardingStatus();
-    if (status && status.step !== "review") {
-      return NextResponse.redirect(new URL(`/onboarding/${status.step}`, req.url));
+    // Determine redirect based on state
+    if (state === "onboarding/mailbox") {
+      return NextResponse.redirect(new URL("/onboarding/mailbox", req.url));
     }
 
-    // Determine redirect based on state
     if (state === "onboarding") {
-      return NextResponse.redirect(new URL("/onboarding/import-investors", req.url));
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
     return NextResponse.redirect(new URL("/settings?success=true", req.url));

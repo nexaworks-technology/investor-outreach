@@ -1,5 +1,6 @@
 import { login } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
+import { SubmitButton } from '@/components/submit-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
@@ -61,9 +62,9 @@ export default async function LoginPage({
             />
           </div>
           <div className="flex flex-col gap-4 pt-2">
-            <Button type="submit" formAction={login} className="w-full">
+            <SubmitButton formAction={login} className="w-full">
               Sign In
-            </Button>
+            </SubmitButton>
             <div className="text-center text-sm text-zinc-500">
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-zinc-900 underline underline-offset-4 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300">

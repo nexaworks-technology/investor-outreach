@@ -140,9 +140,12 @@ export async function getDashboardData() {
     }
   });
 
-  const dailyStats = Object.values(dailyStatsMap);
+  const hasMailbox = await db.mailboxConnection.count({
+    where: { workspaceId, isActive: true }
+  }) > 0;
 
   return {
+    hasMailbox,
     metrics: {
       totalInvestors,
       totalSent,

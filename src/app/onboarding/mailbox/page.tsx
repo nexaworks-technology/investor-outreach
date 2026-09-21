@@ -4,8 +4,10 @@ import { redirect } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, CheckCircle2 } from 'lucide-react';
-import { getGoogleAuthUrl } from '@/actions/mailbox';
 import Link from 'next/link';
+import { SmtpConnectForm } from '@/components/mailbox/smtp-connect-form';
+import { getGoogleAuthUrl } from '@/actions/mailbox';
+import { BetaRequestDialog } from '@/components/mailbox/beta-request-dialog';
 
 export default async function OnboardingMailboxPage() {
   const { workspace } = await requireWorkspace();
@@ -15,7 +17,7 @@ export default async function OnboardingMailboxPage() {
     where: { workspaceId: workspace.id, isActive: true }
   });
 
-  async function handleConnect() {
+  async function handleConnectGoogle() {
     'use server';
     const url = await getGoogleAuthUrl('onboarding/mailbox');
     redirect(url);
@@ -56,17 +58,29 @@ export default async function OnboardingMailboxPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center bg-zinc-50/50 dark:bg-zinc-900/50">
-            <Mail className="mx-auto h-8 w-8 text-zinc-400 mb-3" />
-            <h3 className="font-medium text-lg mb-1">Google Workspace / Gmail</h3>
-            <p className="text-sm text-zinc-500 mb-4 max-w-sm mx-auto">
-              We highly recommend connecting a professional Google Workspace account for best deliverability.
-            </p>
-            <form action={handleConnect}>
-              <Button type="submit">
-                Connect Google Account
-              </Button>
-            </form>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50/50 dark:bg-zinc-900/50">
+              <div className="text-center mb-6">
+                <Mail className="mx-auto h-8 w-8 text-zinc-400 mb-3" />
+                <h3 className="font-medium text-lg mb-1">Connect your Email Account</h3>
+                <p className="text-sm text-zinc-500 max-w-sm mx-auto">
+                  Securely connect Gmail, Outlook, or Zoho using an App Password. We use direct SMTP/IMAP for maximum deliverability and stability.
+                </p>
+              </div>
+              <SmtpConnectForm />
+            </div>
+            
+            <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col items-center text-center">
+              <p className="text-sm font-medium mb-1">Directly connect your Google Inbox (Beta)</p>
+              <p className="text-xs text-zinc-500 mb-3 max-w-sm">
+                Our Google OAuth integration is in private beta. Please contact the team to request early access before attempting to sign in.
+              </p>
+              <BetaRequestDialog>
+                <Button type="button" variant="outline" size="sm">
+                  Sign in with Google (Request Access)
+                </Button>
+              </BetaRequestDialog>
+            </div>
           </div>
         )}
       </CardContent>

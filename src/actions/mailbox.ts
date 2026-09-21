@@ -209,3 +209,34 @@ export async function saveSmtpConnection(data: {
   revalidatePath("/onboarding");
   return mailbox;
 }
+
+export async function requestBetaAccess(data: { email: string; mobile: string }) {
+  const workspaceId = await getWorkspaceId().catch(() => undefined);
+  
+  const request = await db.betaAccessRequest.create({
+    data: {
+      email: data.email,
+      mobile: data.mobile,
+      workspaceId,
+    }
+  });
+
+  // Try to send email to founders using SMTP if configured
+  if (process.env.ADMIN_EMAIL_SMTP_URL) {
+    try {
+      const nodemailer = require('nodemailer');
+      const transporter = nodemailer.createTransport(process.env.ADMIN_EMAIL_SMTP_URL);
+      await transporter.sendMail({
+        from: '"Doodle System" <system@nexaworks.tech>',
+        to: 'sahilghewari00@gmail.com',
+        subject: `New Beta Access Request: ${data.email}`,
+        text: `A new user has requested beta access to the Google Workspace integration.\n\nEmail: ${data.email}\nMobile: ${data.mobile}\nWorkspace ID: ${workspaceId || 'Unknown'}\n\nPlease add them as a Test User in Google Cloud Console.`
+      });
+    } catch (error) {
+      console.error("Failed to send beta request email:", error);
+      // Fail silently for the user, request is still saved in DB
+    }
+  }
+
+  return request;
+}

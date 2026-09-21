@@ -9,7 +9,7 @@ import Papa from 'papaparse';
 import { bulkImportInvestors } from '@/actions/investors';
 import { useRouter } from 'next/navigation';
 
-export function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function ImportDialog({ open, onOpenChange, onImportSuccess }: { open: boolean; onOpenChange: (open: boolean) => void; onImportSuccess?: () => void }) {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -66,7 +66,11 @@ export function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChan
           const result = await bulkImportInvestors(mappedInvestors);
           toast.success(`Successfully imported ${result.count} investors!`);
           onOpenChange(false);
-          router.refresh(); // Refresh the list view
+          if (onImportSuccess) {
+            onImportSuccess();
+          } else {
+            router.refresh();
+          }
         } catch (error) {
           console.error("Import failed:", error);
           toast.error("Failed to import investors");

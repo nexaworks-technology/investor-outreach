@@ -18,6 +18,7 @@ function InvestorsContent() {
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(searchParams.get('action') === 'import');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -69,13 +70,13 @@ function InvestorsContent() {
       </div>
 
       {view === 'list' ? (
-        <InvestorListView search={search} />
+        <InvestorListView key={`list-${refreshKey}`} search={search} />
       ) : (
-        <InvestorKanbanView search={search} />
+        <InvestorKanbanView key={`kanban-${refreshKey}`} search={search} />
       )}
 
-      <AddInvestorDialog open={isAddOpen} onOpenChange={setIsAddOpen} />
-      <ImportDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
+      <AddInvestorDialog open={isAddOpen} onOpenChange={setIsAddOpen} onAddSuccess={() => setRefreshKey(k => k + 1)} />
+      <ImportDialog open={isImportOpen} onOpenChange={setIsImportOpen} onImportSuccess={() => setRefreshKey(k => k + 1)} />
     </div>
   );
 }
