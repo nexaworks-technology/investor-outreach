@@ -158,16 +158,22 @@ export async function saveSmtpConnection(data: {
 
   // Validate the credentials using the smtp provider before saving
   const { smtpProvider } = await import("@/lib/email/smtp");
+  // Google app passwords are 16 chars but often copied with spaces. Strip all spaces for Gmail.
+  const isGmail = data.smtpHost.toLowerCase().includes("gmail.com") || data.smtpHost.toLowerCase().includes("google.com");
+  const cleanPassword = isGmail ? data.smtpPassword.replace(/\s+/g, "") : data.smtpPassword.trim();
+
   const validation = await smtpProvider.validateConnection({
     smtpHost: data.smtpHost,
     smtpPort: data.smtpPort,
     smtpUsername: data.smtpUsername,
-    smtpPassword: data.smtpPassword,
+    smtpPassword: cleanPassword,
   });
 
   if (!validation.isValid) {
     throw new Error(validation.error || "Failed to connect to SMTP server");
   }
+
+  const cleanImapPassword = data.imapPassword ? (isGmail ? data.imapPassword.replace(/\s+/g, "") : data.imapPassword.trim()) : undefined;
 
   const mailbox = await db.mailboxConnection.upsert({
     where: {
@@ -182,11 +188,11 @@ export async function saveSmtpConnection(data: {
       smtpHost: data.smtpHost,
       smtpPort: data.smtpPort,
       smtpUsername: data.smtpUsername,
-      smtpPassword: encrypt(data.smtpPassword),
+      smtpPassword: encrypt(cleanPassword),
       imapHost: data.imapHost,
       imapPort: data.imapPort,
       imapUsername: data.imapUsername,
-      imapPassword: data.imapPassword ? encrypt(data.imapPassword) : undefined,
+      imapPassword: cleanImapPassword ? encrypt(cleanImapPassword) : undefined,
       isActive: true,
     },
     update: {
@@ -195,11 +201,11 @@ export async function saveSmtpConnection(data: {
       smtpHost: data.smtpHost,
       smtpPort: data.smtpPort,
       smtpUsername: data.smtpUsername,
-      smtpPassword: encrypt(data.smtpPassword),
+      smtpPassword: encrypt(cleanPassword),
       imapHost: data.imapHost,
       imapPort: data.imapPort,
       imapUsername: data.imapUsername,
-      imapPassword: data.imapPassword ? encrypt(data.imapPassword) : undefined,
+      imapPassword: cleanImapPassword ? encrypt(cleanImapPassword) : undefined,
       isActive: true,
       syncError: null,
     },
