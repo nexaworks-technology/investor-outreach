@@ -16,6 +16,7 @@ export function SubmitButton({
   return (
     <Button
       {...props}
+      type="submit"
       formAction={formAction}
       className={className}
       disabled={pending || props.disabled}
