@@ -170,7 +170,7 @@ export async function saveSmtpConnection(data: {
   });
 
   if (!validation.isValid) {
-    throw new Error(validation.error || "Failed to connect to SMTP server");
+    return { error: validation.error || "Failed to connect to SMTP server. Please check your credentials." };
   }
 
   const cleanImapPassword = data.imapPassword ? (isGmail ? data.imapPassword.replace(/\s+/g, "") : data.imapPassword.trim()) : undefined;

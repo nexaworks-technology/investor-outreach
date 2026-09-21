@@ -60,7 +60,7 @@ export function SmtpConnectForm() {
         imapHost = 'outlook.office365.com';
       }
       
-      await saveSmtpConnection({
+      const res = await saveSmtpConnection({
         email: formData.email,
         displayName: formData.displayName || formData.email.split('@')[0],
         smtpHost: formData.smtpHost,
@@ -72,6 +72,12 @@ export function SmtpConnectForm() {
         imapUsername: formData.smtpUsername || formData.email,
         imapPassword: formData.smtpPassword
       });
+
+      if (res && 'error' in res) {
+        toast.error(res.error);
+        setIsLoading(false);
+        return;
+      }
 
       toast.success('Mailbox connected successfully!');
       router.refresh(); // Refresh the page to show connected state
