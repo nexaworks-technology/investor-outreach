@@ -35,6 +35,7 @@ export function interpolateVariables(text: string, context: GenerationContext) {
   if (!text) return text;
   return text
     .replace(/{{first_name}}/ig, context.investorName.split(" ")[0] || "")
+    .replace(/{{firstName}}/ig, context.investorName.split(" ")[0] || "")
     .replace(/{{investor_name}}/ig, context.investorName || "")
     .replace(/{{investorName}}/ig, context.investorName || "")
     .replace(/{{investor\.name}}/ig, context.investorName || "")
@@ -43,7 +44,9 @@ export function interpolateVariables(text: string, context: GenerationContext) {
     .replace(/{{sender_name}}/ig, context.senderName || "")
     .replace(/{{senderName}}/ig, context.senderName || "")
     .replace(/{{firm_name}}/ig, context.investorFirm || "")
-    .replace(/{{investorFirm}}/ig, context.investorFirm || "");
+    .replace(/{{investorFirm}}/ig, context.investorFirm || "")
+    .replace(/{{recentInvestment}}/ig, context.portfolioCompanies || "your recent investments")
+    .replace(/{{oneLinePitch}}/ig, context.oneLinePitch || "");
 }
 
 function fallbackReplace(context: GenerationContext) {
