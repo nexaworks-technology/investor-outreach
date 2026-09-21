@@ -99,8 +99,8 @@ function getAvailableProviders(): ProviderConfig[] {
 export async function generatePersonalizedEmail(
   apiKeys: string[],
   context: GenerationContext,
-  provider: string = "zai",
-  model: string = "glm-4.7-flash"
+  provider: string = "groq",
+  model: string = "llama-3.3-70b-versatile"
 ): Promise<{ subject: string; body: string }> {
   if (context.customIcebreaker) {
     console.log("[AI Gen] Using customIcebreaker (0-Token Bypass)");
@@ -112,8 +112,23 @@ export async function generatePersonalizedEmail(
   }
 
   const providersToUse = getAvailableProviders();
+  
+  // If user passed API keys via settings, add them to the top of the pool
+  if (apiKeys && apiKeys.length > 0) {
+    for (const key of apiKeys) {
+      if (key) {
+        providersToUse.unshift({
+          provider: provider as any,
+          apiKey: key,
+          model: model,
+          baseURL: provider === "groq" ? "https://api.groq.com/openai/v1" : undefined
+        });
+      }
+    }
+  }
 
   if (providersToUse.length === 0) {
+    console.warn("[AI Gen] No API keys available (DB or ENV). Falling back to basic template.");
     return fallbackReplace(context);
   }
 
