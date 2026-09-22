@@ -55,10 +55,10 @@ export function ImportDialog({ open, onOpenChange, onImportSuccess }: { open: bo
               location: getVal(["Location", "City"]),
               linkedinUrl: getVal(["LinkedIn", "LinkedIn URL", "Profile"]),
             };
-          }).filter(inv => inv.email && inv.name);
+          }).filter(inv => inv.name);
 
           if (mappedInvestors.length === 0) {
-            toast.error("Could not find required columns (Name, Email)");
+            toast.error("Could not find required columns (Name)");
             setIsImporting(false);
             return;
           }

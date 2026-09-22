@@ -325,7 +325,7 @@ export async function exportInvestorsToCSV() {
 export async function bulkImportInvestors(investors: {
   name: string;
   firm: string;
-  email: string;
+  email?: string;
   typicalCheckSize?: string;
   stagePreference?: string;
   location?: string;
@@ -345,14 +345,18 @@ export async function bulkImportInvestors(investors: {
   if (!userId) throw new Error('Unauthorized');
   const workspaceId = await getWorkspaceId();
 
-  const emails = investors.map(i => i.email).filter(Boolean);
+  const emails = investors.map(i => i.email).filter(Boolean) as string[];
   const existing = await db.investor.findMany({
     where: { workspaceId, email: { in: emails } },
     select: { email: true }
   });
   
   const existingEmails = new Set(existing.map(i => i.email?.toLowerCase()));
-  const newInvestors = investors.filter(i => i.email && !existingEmails.has(i.email.toLowerCase()));
+  
+  const newInvestors = investors.filter(i => {
+    if (!i.email) return true; // Always import if no email (no deduplication)
+    return !existingEmails.has(i.email.toLowerCase());
+  });
 
   if (newInvestors.length === 0) return { count: 0 };
 
@@ -360,7 +364,7 @@ export async function bulkImportInvestors(investors: {
     workspaceId,
     name: i.name || 'Unknown',
     firm: i.firm || 'Unknown',
-    email: i.email.toLowerCase(),
+    email: i.email ? i.email.toLowerCase() : null,
     typicalCheckSize: i.typicalCheckSize || null,
     stagePreference: i.stagePreference || null,
     location: i.location || null,
